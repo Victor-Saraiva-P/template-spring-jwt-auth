@@ -41,4 +41,8 @@ public class UserEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of();
     }
+
+    public String getRoleString() {
+        return String.valueOf(role);
+    }
 }

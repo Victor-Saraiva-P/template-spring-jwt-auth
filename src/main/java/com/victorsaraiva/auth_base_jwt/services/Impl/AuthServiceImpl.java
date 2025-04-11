@@ -25,7 +25,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserEntity register(@Valid CreateUserDTO createUserDTO) {
+    public void register(@Valid CreateUserDTO createUserDTO) {
         // Verifica se o e-mail já está cadastrado
         if (userRepository.findByEmail(createUserDTO.getEmail())
                 .isPresent()) {
@@ -45,7 +45,7 @@ public class AuthServiceImpl implements AuthService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
 
             // salva
-            return userRepository.save(user);
+            userRepository.save(user);
         } catch (Exception e) {
             throw new UserOperationException("Erro ao registrar usuario. Por favor, tente novamente", e);
         }
