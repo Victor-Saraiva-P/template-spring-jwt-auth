@@ -1,5 +1,6 @@
 package com.victorsaraiva.auth_base_jwt.jwt;
 
+import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.models.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -17,26 +18,49 @@ import java.util.function.Function;
 public class JwtUtil {
 
     @Value("${jwt.secret}")
-    private String secret;
+    private String SECRET;
 
     @Value("${jwt.token.expiration}")
-    private Long expiration;
+    private Long EXPIRATION;
 
     public String generateToken(UUID id, String username, String email, Role role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", id);
+
+        // Define as claims
         claims.put("username", username);
         claims.put("email", email);
         claims.put("role", role);
+
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(username)
+                .setSubject(String.valueOf(id))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS512, secret)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .signWith(SignatureAlgorithm.HS512, SECRET)
                 .compact();
     }
 
+    public boolean validateToken(String token, UserEntity expectedUser) {
+        try {
+
+            // Extrai as claims necessárias
+            String emailFromToken = extractUserEmail(token);
+            String roleFromToken = extractUserRole(token);
+
+            // Verifica se o token não expirou e se as claims email e role estão corretas
+            return emailFromToken.equals(expectedUser.getEmail()) &&
+                    roleFromToken.equals(expectedUser.getRoleString()) &&
+                    !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public boolean isTokenExpired(String token) {
+        return extractClaim(token, Claims::getExpiration).before(new Date());
+    }
+
+    // Extracts
     public String extractUserRole(String token) {
         return extractClaim(token, claims -> claims.get("role", String.class));
     }
@@ -45,20 +69,14 @@ public class JwtUtil {
         return extractClaim(token, claims -> claims.get("email", String.class));
     }
 
-    public boolean validateToken(String token, String email) {
-        String extractUserEmail = extractUserEmail(token);
-        boolean isExpired = isTokenExpired(token);
-
-        return (extractUserEmail.equals(email) && !isExpired);
-    }
-
-    public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+    public UUID extractSubject(String token) {
+        // O subject foi definido como o id do usuário
+        return UUID.fromString(extractClaim(token, Claims::getSubject));
     }
 
     private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         Claims claims = Jwts.parser()
-                .setSigningKey(secret)
+                .setSigningKey(SECRET)
                 .parseClaimsJws(token)
                 .getBody();
         return claimsResolver.apply(claims);

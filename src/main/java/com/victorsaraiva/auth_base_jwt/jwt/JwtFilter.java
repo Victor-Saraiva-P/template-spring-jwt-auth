@@ -16,6 +16,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -30,29 +31,35 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
+            throws ServletException, IOException {
+
         String token = recoverToken(request);
 
-        if (token != null) {
-            String role = jwtUtil.extractUserRole(token);
-            String email = jwtUtil.extractUserEmail(token);
+        // Se há um token e ainda não existe autenticação no contexto...
+        if (token != null && SecurityContextHolder.getContext()
+                .getAuthentication() == null) {
+            // Extrai o subject que foi definido como o id do usuário
+            UUID userId = jwtUtil.extractSubject(token);
 
-            if (email != null && SecurityContextHolder.getContext()
-                    .getAuthentication() == null) {
-                UserEntity userEntity = userRepository.findByEmail(email)
-                        .orElse(null);
-                if (jwtUtil.validateToken(token, email)) {
-                    List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + role));
+            // Busca o usuário pelo id extraído
+            UserEntity userEntity = userRepository.findById(userId)
+                    .orElse(null);
 
-                    UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userEntity, null,
-                            authorities);
+            // Verifica se o usuário existe e se o token é válido em relação a esse usuário
+            if (userEntity != null && jwtUtil.validateToken(token, userEntity)) {
+                // Extrai a role do token (para definição das authorities)
+                String role = userEntity.getRoleString();
+                List<GrantedAuthority> authorities =
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role));
 
-                    SecurityContextHolder.getContext()
-                            .setAuthentication(auth);
-                }
+                // Cria a autenticação e coloca no SecurityContext
+                UsernamePasswordAuthenticationToken auth =
+                        new UsernamePasswordAuthenticationToken(userEntity, null, authorities);
+                SecurityContextHolder.getContext()
+                        .setAuthentication(auth);
             }
         }
 
