@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.jwt;
+package com.victorsaraiva.auth_base_jwt.jwtutils;
 
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.models.enums.Role;
@@ -15,7 +15,7 @@ import java.util.UUID;
 import java.util.function.Function;
 
 @Component
-public class JwtUtil {
+public class TokenManager {
 
     @Value("${jwt.secret}")
     private String SECRET;

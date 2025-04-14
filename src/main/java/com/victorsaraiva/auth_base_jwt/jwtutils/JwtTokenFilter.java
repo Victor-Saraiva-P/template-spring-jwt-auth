@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.jwt;
+package com.victorsaraiva.auth_base_jwt.jwtutils;
 
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
@@ -19,15 +19,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Component
-public class JwtFilter extends OncePerRequestFilter {
+public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final TokenManager tokenManager;
 
     private final UserRepository userRepository;
 
-    public JwtFilter(UserRepository userRepository, JwtUtil jwtUtil) {
+    public JwtTokenFilter(UserRepository userRepository, TokenManager tokenManager) {
         this.userRepository = userRepository;
-        this.jwtUtil = jwtUtil;
+        this.tokenManager = tokenManager;
     }
 
     @Override
@@ -42,14 +42,14 @@ public class JwtFilter extends OncePerRequestFilter {
         if (token != null && SecurityContextHolder.getContext()
                 .getAuthentication() == null) {
             // Extrai o subject que foi definido como o id do usuário
-            UUID userId = jwtUtil.extractSubject(token);
+            UUID userId = tokenManager.extractSubject(token);
 
             // Busca o usuário pelo id extraído
             UserEntity userEntity = userRepository.findById(userId)
                     .orElse(null);
 
             // Verifica se o usuário existe e se o token é válido em relação a esse usuário
-            if (userEntity != null && jwtUtil.validateToken(token, userEntity)) {
+            if (userEntity != null && tokenManager.validateToken(token, userEntity)) {
                 // Extrai a role do token (para definição das authorities)
                 String role = userEntity.getRoleString();
                 List<GrantedAuthority> authorities =
