@@ -74,9 +74,4 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    @Override
-    public UserEntity findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new EmailNotFoundException(email));
-    }
 }

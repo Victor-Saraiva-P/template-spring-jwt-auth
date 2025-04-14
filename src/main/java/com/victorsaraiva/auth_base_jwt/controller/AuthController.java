@@ -3,7 +3,7 @@ package com.victorsaraiva.auth_base_jwt.controller;
 
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
-import com.victorsaraiva.auth_base_jwt.jwt.JwtUtil;
+import com.victorsaraiva.auth_base_jwt.jwtutils.TokenManager;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
 import jakarta.validation.Valid;
@@ -19,11 +19,11 @@ public class AuthController {
 
     private final AuthService authService;
 
-    private final JwtUtil jwtUtil;
+    private final TokenManager tokenManager;
 
-    public AuthController(AuthService authService, JwtUtil jwtUtil) {
+    public AuthController(AuthService authService, TokenManager tokenManager) {
         this.authService = authService;
-        this.jwtUtil = jwtUtil;
+        this.tokenManager = tokenManager;
     }
 
     @PostMapping("/register")
@@ -39,7 +39,7 @@ public class AuthController {
         UserEntity userEntity = authService.login(loginUserDTO);
 
         // Gera o token JWT
-        String token = jwtUtil.generateToken(
+        String token = tokenManager.generateToken(
                 userEntity.getId(),
                 userEntity.getUsername(),
                 userEntity.getEmail(),
@@ -47,11 +47,5 @@ public class AuthController {
         );
 
         return ResponseEntity.ok(Map.of("token", token));
-    }
-
-    @GetMapping("/{email}")
-    public ResponseEntity<UserEntity> findByEmail(@PathVariable String email) {
-        UserEntity userEntity = authService.findUserByEmail(email);
-        return ResponseEntity.ok(userEntity);
     }
 }

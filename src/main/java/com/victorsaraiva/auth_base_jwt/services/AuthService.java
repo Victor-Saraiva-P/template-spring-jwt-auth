@@ -9,5 +9,4 @@ public interface AuthService {
 
     UserEntity login(LoginUserDTO loginUserDTO);
 
-    UserEntity findUserByEmail(String email);
 }
