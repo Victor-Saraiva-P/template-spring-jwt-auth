@@ -2,6 +2,7 @@ package com.victorsaraiva.auth_base_jwt.services.Impl;
 
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.*;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
@@ -17,11 +18,13 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final Mapper<UserEntity, CreateUserDTO> createUserDTOMapper;
+    private final Mapper<UserEntity, UserDTO> userDTOMapper;
 
-    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, Mapper<UserEntity, CreateUserDTO> createUserDTOMapper) {
+    public AuthServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, Mapper<UserEntity, CreateUserDTO> createUserDTOMapper, Mapper<UserEntity, UserDTO> userDTOMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.createUserDTOMapper = createUserDTOMapper;
+        this.userDTOMapper = userDTOMapper;
     }
 
     @Override
@@ -53,22 +56,18 @@ public class AuthServiceImpl implements AuthService {
 
 
     @Override
-    public UserEntity login(LoginUserDTO loginUserDTO) {
+    public UserDTO login(LoginUserDTO loginUserDTO) {
         try {
             UserEntity userFoundByEmail = userRepository.findByEmail(loginUserDTO.getEmail())
                     .orElseThrow(() -> new EmailNotFoundException(loginUserDTO.getEmail()));
 
             // Verifica se a senha informada é a mesma que a senha cadastrada
             if (passwordEncoder.matches(loginUserDTO.getPassword(), userFoundByEmail.getPassword())) {
-                return userFoundByEmail;
+                return userDTOMapper.mapTo(userFoundByEmail);
             }
             // Senão encontrar a senha é inválida
             throw new InvalidPasswordException();
 
-        } catch (EmailNotFoundException e) {
-            throw new EmailNotFoundException("Email não encontrado. Por favor, verifique se o email está correto.");
-        } catch (InvalidPasswordException e) {
-            throw new InvalidPasswordException();
         } catch (Exception e) {
             throw new UserOperationException("Erro ao logar usuario. Por favor, tente novamente", e);
         }

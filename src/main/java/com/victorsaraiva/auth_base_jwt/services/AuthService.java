@@ -2,11 +2,11 @@ package com.victorsaraiva.auth_base_jwt.services;
 
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
-import com.victorsaraiva.auth_base_jwt.models.UserEntity;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 
 public interface AuthService {
     void register(CreateUserDTO createUserDTO);
 
-    UserEntity login(LoginUserDTO loginUserDTO);
+    UserDTO login(LoginUserDTO loginUserDTO);
 
 }

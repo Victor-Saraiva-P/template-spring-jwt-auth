@@ -3,13 +3,16 @@ package com.victorsaraiva.auth_base_jwt.controller;
 
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.jwtutils.TokenManager;
-import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
@@ -36,14 +39,14 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
-        UserEntity userEntity = authService.login(loginUserDTO);
+        UserDTO userDTO = authService.login(loginUserDTO);
 
         // Gera o token JWT
         String token = tokenManager.generateToken(
-                userEntity.getId(),
-                userEntity.getUsername(),
-                userEntity.getEmail(),
-                userEntity.getRole()
+                userDTO.getId(),
+                userDTO.getUsername(),
+                userDTO.getEmail(),
+                userDTO.getRole()
         );
 
         return ResponseEntity.ok(Map.of("token", token));
