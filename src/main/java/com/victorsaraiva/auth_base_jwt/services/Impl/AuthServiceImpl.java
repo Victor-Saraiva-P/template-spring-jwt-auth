@@ -57,20 +57,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDTO login(LoginUserDTO loginUserDTO) {
-        try {
-            UserEntity userFoundByEmail = userRepository.findByEmail(loginUserDTO.getEmail())
-                    .orElseThrow(() -> new EmailNotFoundException(loginUserDTO.getEmail()));
+        UserEntity userFoundByEmail = userRepository.findByEmail(loginUserDTO.getEmail())
+                .orElseThrow(() -> new EmailNotFoundException(loginUserDTO.getEmail()));
 
-            // Verifica se a senha informada é a mesma que a senha cadastrada
-            if (passwordEncoder.matches(loginUserDTO.getPassword(), userFoundByEmail.getPassword())) {
-                return userDTOMapper.mapTo(userFoundByEmail);
-            }
-            // Senão encontrar a senha é inválida
-            throw new InvalidPasswordException();
-
-        } catch (Exception e) {
-            throw new UserOperationException("Erro ao logar usuario. Por favor, tente novamente", e);
+        // Verifica se a senha informada é a mesma que a senha cadastrada
+        if (passwordEncoder.matches(loginUserDTO.getPassword(), userFoundByEmail.getPassword())) {
+            return userDTOMapper.mapTo(userFoundByEmail);
         }
+        // Senão encontrar a senha é inválida
+        throw new InvalidPasswordException();
     }
 
 }
