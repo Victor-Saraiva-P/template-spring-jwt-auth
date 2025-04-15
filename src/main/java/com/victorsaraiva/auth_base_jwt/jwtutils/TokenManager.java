@@ -57,8 +57,15 @@ public class TokenManager {
     }
 
     public boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+        try {
+            Date expiration = extractClaim(token, Claims::getExpiration);
+            return expiration.before(new Date());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            // Se ocorrer a ExpiredJwtException, significa que o token está expirado.
+            return true;
+        }
     }
+
 
     // Extracts
     public String extractUserRole(String token) {
