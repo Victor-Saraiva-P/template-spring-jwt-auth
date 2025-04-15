@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.util;
+package com.victorsaraiva.auth_base_jwt.testutils;
 
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;

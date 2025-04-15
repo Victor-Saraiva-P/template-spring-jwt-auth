@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
-import com.victorsaraiva.auth_base_jwt.util.UserTestDataUtil;
+import com.victorsaraiva.auth_base_jwt.testutils.UserTestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-class AuthControllerIntegrationTest {
+class AuthControllerTest {
     private static final String AUTH_BASE_URL = "/auth";
 
     @Autowired

@@ -8,7 +8,7 @@ import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
 import com.victorsaraiva.auth_base_jwt.services.Impl.AuthServiceImpl;
-import com.victorsaraiva.auth_base_jwt.util.UserTestDataUtil;
+import com.victorsaraiva.auth_base_jwt.testutils.UserTestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
-class AuthServiceImplUnitTest {
+class AuthServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
