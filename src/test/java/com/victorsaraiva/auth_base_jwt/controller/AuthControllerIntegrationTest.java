@@ -2,11 +2,10 @@ package com.victorsaraiva.auth_base_jwt.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.victorsaraiva.auth_base_jwt.UserTestDataUtil;
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
-import com.victorsaraiva.auth_base_jwt.services.AuthService;
+import com.victorsaraiva.auth_base_jwt.util.UserTestDataUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class AuthControllerIntegrationTest {
-    private static final String AUTH_BASE_URL = "http://localhost:8080/auth";
+    private static final String AUTH_BASE_URL = "/auth";
 
     @Autowired
     private MockMvc mockMvc;
@@ -34,9 +33,6 @@ class AuthControllerIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private AuthService authService;
 
     @Autowired
     private UserRepository userRepository;
@@ -52,7 +48,7 @@ class AuthControllerIntegrationTest {
     }
 
 
-    //-------------------TESTES DO METODO REGISTER-------------------//
+    /// -------------------TESTES DO METODO REGISTER-------------------//
     @Test
     void deveRegistrarUsuario() throws Exception {
         CreateUserDTO userToRegister = UserTestDataUtil.criarCreateUserDto("UsuarioA");
@@ -63,7 +59,7 @@ class AuthControllerIntegrationTest {
                 .andExpect(status().isCreated());
     }
 
-    //-------------------TESTES DO METODO LOGIN-------------------//
+    ///-------------------TESTES DO METODO LOGIN-------------------//
     @Test
     void deveLogarUsuario() throws Exception {
         CreateUserDTO userToLogin = adicionarUsuario("UsuarioA");
@@ -78,7 +74,7 @@ class AuthControllerIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    //-------------------------------MÉTODOS AUXILIARES-------------------------------//
+    ///-------------------------------MÉTODOS AUXILIARES-------------------------------//
 
     public CreateUserDTO adicionarUsuario(String nome) {
         CreateUserDTO createUserDTO = UserTestDataUtil.criarCreateUserDto(nome);
