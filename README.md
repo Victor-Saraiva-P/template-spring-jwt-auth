@@ -1,1 +1,1 @@
-template-spring-jwt-auth
+monolith-template-spring-jwt-auth
