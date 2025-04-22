@@ -10,16 +10,15 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @ActiveProfiles("test")
 class AuthBaseJwtApplicationTests {
 
-    @MockitoBean
-    private SpringApplication springApplication;
+  @MockitoBean private SpringApplication springApplication;
 
-    @Test
-    void contextLoads() {
-        // Este metodo verifica se o contexto da aplicação Spring Boot é carregado sem erros
-    }
+  @Test
+  void contextLoads() {
+    // Este metodo verifica se o contexto da aplicação Spring Boot é carregado sem erros
+  }
 
-    @Test
-    void testMainMethod() {
-        AuthBaseJwtApplication.main(new String[]{});
-    }
+  @Test
+  void testMainMethod() {
+    AuthBaseJwtApplication.main(new String[] {});
+  }
 }
