@@ -34,3 +34,16 @@ jobs:
               with:
                   name: surefire-reports
                   path: target/surefire-reports
+
+        services:
+            postgres:
+                image: postgres:16-alpine
+                env:
+                    POSTGRES_DB: authdb
+                    POSTGRES_USER: auth
+                    POSTGRES_PASSWORD: authpwd
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd="pg_isready -U auth" --health-interval=10s
+                    --health-timeout=5s --health-retries=5                          
