@@ -6,12 +6,12 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.4</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.victorsaraiva</groupId>
-	<artifactId>template-spring-jwt-auth</artifactId>
+	<artifactId>monolith-template-spring-jwt-auth</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>Template Spring Boot JWT Auth</name>
+	<name>Monolith Template Spring Jwt Auth</name>
 	<description>Projeto template para uma aplicação monolitica usando autenticação com JWT usando Spring .</description>
 	<url/>
 	<licenses>
