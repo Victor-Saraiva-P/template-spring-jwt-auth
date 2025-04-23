@@ -1,0 +1,8 @@
+spring:
+    jpa:
+        hibernate:
+            ddl-auto: validate
+    datasource:
+        url: jdbc:tc:postgresql:16:///monolith_authdb   # Testcontainers JDBC driver
+        username: auth
+        password: authpwd

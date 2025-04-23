@@ -1,0 +1,10 @@
+spring:
+    datasource:
+        url: postgresql://localhost:5432/monolith_authdb
+        username: auth
+        password: authpwd
+    jpa:
+        hibernate:
+            ddl-auto: validate
+        properties:
+            hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
