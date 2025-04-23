@@ -7,4 +7,4 @@ spring:
         hibernate:
             ddl-auto: validate
         properties:
-            hibernate:org.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+            hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
