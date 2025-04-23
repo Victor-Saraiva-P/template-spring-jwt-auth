@@ -39,7 +39,7 @@ jobs:
             postgres:
                 image: postgres:17.4
                 env:
-                    POSTGRES_DB: authdb
+                    POSTGRES_DB: monolith_authdb
                     POSTGRES_USER: auth
                     POSTGRES_PASSWORD: authpwd
                 ports:
