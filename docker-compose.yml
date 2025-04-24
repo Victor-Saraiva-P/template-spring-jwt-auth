@@ -1,37 +1,40 @@
 version: "3.9"
 
 services:
-    db:
+    postgres:
         image: postgres:17.4
         container_name: monolith_authdb
         restart: unless-stopped
+        ports:
+            - "5432:5432"
         environment:
             POSTGRES_DB: monolith_authdb
             POSTGRES_USER: auth
             POSTGRES_PASSWORD: authpwd
-        ports:
-            - "5432:5432"
         volumes:
-            - db_data:/var/lib/postgresql/data
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - auth_network
         healthcheck:
             test: [ "CMD-SHELL", "pg_isready -U auth -d monolith_authdb" ]
             interval: 10s
             timeout: 5s
             retries: 5
 
-    app:
-        build: .
-        container_name: auth-app
-        depends_on:
-            db:
-                condition: service_healthy
-        environment:
-            SPRING_PROFILES_ACTIVE: dev
-            SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/monolith_authdb
-            SPRING_DATASOURCE_USERNAME: auth
-            SPRING_DATASOURCE_PASSWORD: authpwd
+    adminer:
+        image: adminer:latest
+        container_name: auth_adminer
+        restart: always
         ports:
-            - "8080:8080"
+            - "8888:8080"
+        networks:
+            - auth_network
+        environment:
+            ADMINER_DEFAULT_SERVER: postgres
 
 volumes:
-    db_data:
+    postgres_data:
+
+networks:
+    auth_network:
+        driver: bridge
