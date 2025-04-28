@@ -9,6 +9,11 @@ spring:
         url: jdbc:postgresql://localhost:5432/monolith_authdb
         username: auth
         password: authpwd
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            timeout: 1000ms
     jpa:
         hibernate:
             ddl-auto: update   # convenient for dev (Flyway later)
