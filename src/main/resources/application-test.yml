@@ -2,7 +2,6 @@ spring:
     jpa:
         hibernate:
             ddl-auto: validate
-    datasource:
-        url: jdbc:tc:postgresql:16:///monolith_authdb   # Testcontainers JDBC driver
-        username: auth
-        password: authpwd
+    flyway:
+        baseline-on-migrate: true   # só se o DB de teste já tiver algo
+        enabled: true
