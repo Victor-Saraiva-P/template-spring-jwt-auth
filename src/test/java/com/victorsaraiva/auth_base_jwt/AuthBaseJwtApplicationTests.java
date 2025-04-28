@@ -1,16 +1,15 @@
 package com.victorsaraiva.auth_base_jwt;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
-@ActiveProfiles("test")
-class AuthBaseJwtApplicationTests {
+/**
+ * Sobe o contexto Spring completo usando o container PostgreSQL configurado em {@link AbstractIT}.
+ * Falha se qualquer bean ou migration der problema.
+ */
+class AuthBaseJwtApplicationTests extends AbstractIT {
 
   @Test
   void contextLoads() {
-    // Este metodo está vazio propositalmente, pois verifica apenas
-    // se o contexto da aplicação Spring Boot é carregado sem erros
+    // não precisa de nada aqui – se chegou até este ponto, o contexto subiu.
   }
 }
