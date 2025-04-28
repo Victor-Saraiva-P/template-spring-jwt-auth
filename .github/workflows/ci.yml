@@ -9,41 +9,26 @@ jobs:
     build:
         runs-on: ubuntu-latest
 
-        permissions:
-            contents: read
-            security-events: write    # para alertas do dependabot
-
         steps:
-            - name: Checkout repo
-              uses: actions/checkout@v4
-            - run: chmod +x mvnw
+            -   name: Checkout
+                uses: actions/checkout@v4
 
-            - name: Set up JDK 21
-              uses: actions/setup-java@v4
-              with:
-                  java-version: 21
-                  distribution: temurin
-                  cache: maven
+            -   name: Make wrapper executable
+                run: chmod +x mvnw
 
-            - name: Build & test
-              run: SPRING_PROFILES_ACTIVE=dev ./mvnw --batch-mode verify
+            -   name: Set up JDK 21
+                uses: actions/setup-java@v4
+                with:
+                    java-version: 21
+                    distribution: temurin
+                    cache: maven
 
-            - name: Upload test report
-              if: always()
-              uses: actions/upload-artifact@v4
-              with:
-                  name: surefire-reports
-                  path: target/surefire-reports
+            -   name: Build & test (profile=test)
+                run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
 
-        services:
-            postgres:
-                image: postgres:17.4
-                env:
-                    POSTGRES_DB: monolith_authdb
-                    POSTGRES_USER: auth
-                    POSTGRES_PASSWORD: authpwd
-                ports:
-                    - 5432:5432
-                options: >-
-                    --health-cmd="pg_isready -U auth -d monolith_authdb" --health-interval=10s
-                    --health-timeout=5s --health-retries=5                          
+            -   name: Upload Surefire reports
+                if: always()
+                uses: actions/upload-artifact@v4
+                with:
+                    name: surefire-reports
+                    path: target/surefire-reports
