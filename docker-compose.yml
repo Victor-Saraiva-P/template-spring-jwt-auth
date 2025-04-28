@@ -21,6 +21,13 @@ services:
             timeout: 5s
             retries: 5
 
+    redis:
+        image: redis:7.4
+        container_name: jwt-redis
+        ports:
+            - "6379:6379"
+        command: [ "redis-server", "--appendonly", "yes" ]
+
     adminer:
         image: adminer:latest
         container_name: auth_adminer
