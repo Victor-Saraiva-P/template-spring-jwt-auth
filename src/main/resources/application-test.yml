@@ -1,7 +1,10 @@
 spring:
+    datasource:
+        url: jdbc:postgresql://postgres:5432/monolith_authdb   # 👈 host é "postgres", NÃO "localhost"
+        username: auth
+        password: authpwd
     jpa:
         hibernate:
             ddl-auto: validate
     flyway:
-        baseline-on-migrate: true   # só se o DB de teste já tiver algo
         enabled: true
