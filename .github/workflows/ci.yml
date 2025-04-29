@@ -18,7 +18,7 @@ jobs:
             - name: Ensure Docker daemon is running
               run: |
                   sudo systemctl start docker
-                  docker info                                     # falha aqui se Docker não estiver ok
+                  docker info
 
             # 3) Maven wrapper executável
             - name: Make wrapper executable
@@ -33,8 +33,8 @@ jobs:
                   cache: maven
 
             # 5) Build + testes com profile test (Flyway + Testcontainers)
-            - name: Build & Test (profile=test)
-              run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
+            - name: Build & Test
+              run: ./mvnw --batch-mode verify
 
             # 6) Publica relatórios de teste mesmo se falhar
             - name: Upload Surefire reports
