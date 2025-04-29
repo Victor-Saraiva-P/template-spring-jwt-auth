@@ -47,8 +47,12 @@ jobs:
                           cache: maven
 
                     # 5) Build + testes com profile test (Flyway + Testcontainers)
-                    - name: Build & Test
-                      run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
+                    -   name: Build & Test
+                        run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
+                        env:
+                            SPRING_DATASOURCE_USERNAME: auth
+                            SPRING_DATASOURCE_PASSWORD: authpwd
+                            SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/monolith_authdb
 
                     # 6) Publica relatórios de teste mesmo se falhar
                     - name: Upload Surefire reports
