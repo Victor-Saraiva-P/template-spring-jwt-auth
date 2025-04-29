@@ -9,15 +9,22 @@ jobs:
     build:
         runs-on: ubuntu-latest
 
-        permissions:
-            contents: read
-            security-events: write    # para alertas do dependabot
-
         steps:
-            - name: Checkout repo
+            # 1) Checkout do código
+            - name: Checkout
               uses: actions/checkout@v4
-            - run: chmod +x mvnw
 
+            # 2) Garante que o daemon Docker está ativo
+            - name: Ensure Docker daemon is running
+              run: |
+                  sudo systemctl start docker
+                  docker info                                     # falha aqui se Docker não estiver ok
+
+            # 3) Maven wrapper executável
+            - name: Make wrapper executable
+              run: chmod +x mvnw
+
+            # 4) Java 21 (Temurin)
             - name: Set up JDK 21
               uses: actions/setup-java@v4
               with:
@@ -25,25 +32,14 @@ jobs:
                   distribution: temurin
                   cache: maven
 
-            - name: Build & test
-              run: SPRING_PROFILES_ACTIVE=dev ./mvnw --batch-mode verify
+            # 5) Build + testes com profile test (Flyway + Testcontainers)
+            - name: Build & Test (profile=test)
+              run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
 
-            - name: Upload test report
+            # 6) Publica relatórios de teste mesmo se falhar
+            - name: Upload Surefire reports
               if: always()
               uses: actions/upload-artifact@v4
               with:
                   name: surefire-reports
                   path: target/surefire-reports
-
-        services:
-            postgres:
-                image: postgres:17.4
-                env:
-                    POSTGRES_DB: monolith_authdb
-                    POSTGRES_USER: auth
-                    POSTGRES_PASSWORD: authpwd
-                ports:
-                    - 5432:5432
-                options: >-
-                    --health-cmd="pg_isready -U auth -d monolith_authdb" --health-interval=10s
-                    --health-timeout=5s --health-retries=5                          

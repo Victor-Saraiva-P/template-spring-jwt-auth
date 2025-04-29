@@ -1,0 +1,18 @@
+spring:
+    datasource:
+        url: jdbc:postgresql://localhost:5432/monolith_authdb
+        username: auth
+        password: authpwd
+
+    flyway:
+        locations: classpath:db/migration
+        baseline-on-migrate: true   # só necessário se o BD já tem tabelas
+        # enabled: true  # default já é true
+
+    jpa:
+        hibernate:
+            ddl-auto: validate         # ⬅️ deixa o Flyway ser o “dono” do schema
+
+logging:
+    level:
+        root: info
