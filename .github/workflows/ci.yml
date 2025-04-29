@@ -34,7 +34,7 @@ jobs:
 
             # 5) Build + testes com profile test (Flyway + Testcontainers)
             - name: Build & Test
-              run: ./mvnw --batch-mode verify
+              run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
 
             # 6) Publica relatórios de teste mesmo se falhar
             - name: Upload Surefire reports
