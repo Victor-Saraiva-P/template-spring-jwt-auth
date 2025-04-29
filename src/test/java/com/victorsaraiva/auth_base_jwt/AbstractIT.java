@@ -16,7 +16,7 @@ public abstract class AbstractIT {
   @Container
   static PostgreSQLContainer<?> pg =
       new PostgreSQLContainer<>(
-              "postgres:17.4")
+           "postgres:17.4")
           .withDatabaseName("monolith_authdb")
           .withUsername("auth")
           .withPassword("authpwd");

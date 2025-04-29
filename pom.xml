@@ -11,7 +11,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.4.4</version>
+        <version>3.4.5</version>
         <relativePath/>
     </parent>
 
@@ -30,7 +30,7 @@
         <flyway.version>11.8.0</flyway.version>
         <jjwt.version>0.12.5</jjwt.version>
         <postgres.driver.version>42.7.3</postgres.driver.version>
-        <testcontainers.version>1.19.7</testcontainers.version>
+        <testcontainers.version>1.21.0</testcontainers.version>
         <spotless.version>2.44.4</spotless.version>
     </properties>
 
