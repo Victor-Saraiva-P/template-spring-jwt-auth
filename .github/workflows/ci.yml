@@ -16,7 +16,6 @@ jobs:
                     POSTGRES_DB: monolith_authdb
                     POSTGRES_USER: auth
                     POSTGRES_PASSWORD: authpwd
-                    POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
                 ports:
                     - 5432:5432
                 options: >-
@@ -26,11 +25,6 @@ jobs:
                     --health-retries 5
 
         steps:
-            # 0) Adicionar depois da verificação de saúde do PostgreSQL
-            -   name: Create root user
-                run: |
-                    docker exec -i $(docker ps -q -f 'name=postgres') psql -U auth -d monolith_authdb -c "CREATE USER root WITH PASSWORD 'password' SUPERUSER;"
-
             # 1) Checkout do código
             -   name: Checkout
                 uses: actions/checkout@v4
@@ -41,11 +35,16 @@ jobs:
                     sudo systemctl start docker
                     docker info
 
-            # 3) Maven wrapper executável
+            # 3) Criar usuário root DEPOIS do checkout e ANTES dos testes
+            -   name: Create root user
+                run: |
+                    docker exec -i $(docker ps -q -f 'ancestor=postgres:17.4') psql -U auth -d monolith_authdb -c "CREATE USER root WITH PASSWORD 'password' SUPERUSER;"
+
+            # 4) Maven wrapper executável
             -   name: Make wrapper executable
                 run: chmod +x mvnw
 
-            # 4) Java 21 (Temurin)
+            # 5) Java 21 (Temurin)
             -   name: Set up JDK 21
                 uses: actions/setup-java@v4
                 with:
@@ -53,20 +52,10 @@ jobs:
                     distribution: temurin
                     cache: maven
 
-            # 5) Build + testes com profile test (Flyway + Testcontainers)
+            # 6) Build + testes
             -   name: Build & Test
                 run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
                 env:
                     SPRING_DATASOURCE_USERNAME: auth
                     SPRING_DATASOURCE_PASSWORD: authpwd
                     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/monolith_authdb
-
-            # 6) Publica relatórios de teste mesmo se falhar
-            -   name: Upload Surefire reports
-                if: always()
-                uses: actions/upload-artifact@v4
-                with:
-                    name: surefire-reports
-                    path: target/surefire-reports
-        # Resto dos steps continua igual...
-
