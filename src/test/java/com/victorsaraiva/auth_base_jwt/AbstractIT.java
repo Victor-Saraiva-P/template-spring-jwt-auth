@@ -16,7 +16,7 @@ public abstract class AbstractIT {
   @Container
   static PostgreSQLContainer<?> pg =
       new PostgreSQLContainer<>(
-              "postgres:16-alpine") // 16 para Flyway 11.8, 17 se atualizar Flyway ≥ 11.11
+              "postgres:17.4")
           .withDatabaseName("monolith_authdb")
           .withUsername("auth")
           .withPassword("authpwd");
