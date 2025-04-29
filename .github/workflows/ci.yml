@@ -52,10 +52,12 @@ jobs:
                     distribution: temurin
                     cache: maven
 
-            # 6) Build + testes
             -   name: Build & Test
                 run: SPRING_PROFILES_ACTIVE=test ./mvnw --batch-mode verify
                 env:
                     SPRING_DATASOURCE_USERNAME: auth
                     SPRING_DATASOURCE_PASSWORD: authpwd
                     SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/monolith_authdb
+                    SPRING_FLYWAY_USER: auth
+                    SPRING_FLYWAY_PASSWORD: authpwd
+                    SPRING_FLYWAY_URL: jdbc:postgresql://postgres:5432/monolith_authdb
