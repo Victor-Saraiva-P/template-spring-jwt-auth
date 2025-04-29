@@ -1,6 +1,5 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.configs.PasswordConfig;
 import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -14,6 +13,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -26,15 +26,15 @@ public class SecurityConfig {
 
   public final JwtAuthFilter jwtAuthFilter;
   public final UserDetailsServiceImpl userDetailsService;
-  public final PasswordConfig passwordConfig;
+  public final PasswordEncoder passwordEncoder;
 
   public SecurityConfig(
       JwtAuthFilter jwtAuthFilter,
       UserDetailsServiceImpl userDetailsService,
-      PasswordConfig passwordConfig) {
+      PasswordEncoder passwordEncoder) {
     this.jwtAuthFilter = jwtAuthFilter;
     this.userDetailsService = userDetailsService;
-    this.passwordConfig = passwordConfig;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @Bean
@@ -59,7 +59,7 @@ public class SecurityConfig {
   public AuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
     authenticationProvider.setUserDetailsService(userDetailsService);
-    authenticationProvider.setPasswordEncoder(passwordConfig.passwordEncoder());
+    authenticationProvider.setPasswordEncoder(passwordEncoder);
     return authenticationProvider;
   }
 
