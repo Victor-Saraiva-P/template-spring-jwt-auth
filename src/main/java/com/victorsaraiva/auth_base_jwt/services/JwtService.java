@@ -56,7 +56,11 @@ public class JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    return Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token).getPayload();
+    try {
+      return Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token).getPayload();
+    } catch (io.jsonwebtoken.JwtException e) {
+      throw new IllegalArgumentException("Invalid JWT token", e);
+    }
   }
 
   public Date extractExpiration(String token) {
