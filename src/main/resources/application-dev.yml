@@ -4,3 +4,10 @@ spring:
             ddl-auto: update
     flyway:
         enabled: false
+
+# Configurações do JWT
+security:
+    access-jwt:
+        secret: "chaveParaDesenvolvimentoTrocarQuandoEntrarEmProducao" # Trocar na produção
+        expiration: 900000  # 15 minutos em milissegundos
+

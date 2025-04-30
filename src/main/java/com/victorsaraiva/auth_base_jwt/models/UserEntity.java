@@ -10,6 +10,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
+@Getter
 @Table(name = "users")
 public class UserEntity {
   @Id
@@ -28,5 +29,6 @@ public class UserEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private Role role = Role.USER; // valor padrão
+  @Builder.Default
+  private Role role = Role.USER;
 }
