@@ -2,8 +2,9 @@ package com.victorsaraiva.auth_base_jwt.models;
 
 import com.victorsaraiva.auth_base_jwt.models.enums.Role;
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.*;
+
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
@@ -29,5 +30,6 @@ public class UserEntity {
 
   @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private Role role; // valor padrão
+  @Builder.Default
+  private Role role = Role.USER;
 }
