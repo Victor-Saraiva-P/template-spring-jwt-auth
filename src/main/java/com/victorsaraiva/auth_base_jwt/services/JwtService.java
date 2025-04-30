@@ -5,15 +5,16 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 @Service
 public class JwtService {
@@ -67,12 +68,38 @@ public class JwtService {
     return extractClaim(token, claims -> claims.get("email", String.class));
   }
 
+  public String extractRole(String token) {
+    return extractClaim(token, claims -> claims.get("role", String.class));
+  }
+
+  public String extractUsername(String token) {
+    return extractClaim(token, claims -> claims.get("username", String.class));
+  }
+
   private boolean isTokenExpired(String token) {
     return extractExpiration(token).before(new Date());
   }
 
   public Boolean isTokenValid(String token, UserDetails userDetails) {
+    // 1. Verifica se o token está expirado
+    if (isTokenExpired(token)) {
+      return false;
+    }
+
+    // 2. Verifica se a role corresponde
+    final String tokenRole = extractRole(token);
+    boolean hasRole =
+        userDetails.getAuthorities().stream()
+            .anyMatch(
+                authority ->
+                    authority.getAuthority().equals("ROLE_" + tokenRole)
+                        || authority.getAuthority().equals(tokenRole));
+    if (!hasRole) {
+      return false;
+    }
+
+    // 3. Verifica se o email corresponde
     final String email = extractEmail(token);
-    return (email.equals(userDetails.getUsername()) && !isTokenExpired(token));
+    return email.equals(userDetails.getUsername());
   }
 }
