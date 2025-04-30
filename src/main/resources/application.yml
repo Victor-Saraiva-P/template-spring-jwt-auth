@@ -20,3 +20,4 @@ logging:
 # Configurações da API
 api:
     base-url: "/api/v1"
+    project-name: "auth-base-jwt"
