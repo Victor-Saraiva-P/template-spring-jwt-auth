@@ -57,12 +57,19 @@ public class JwtService {
 
   private Claims extractAllClaims(String token) {
     try {
-      return Jwts.parser().verifyWith(getSignKey()).build().parseSignedClaims(token).getPayload();
+      return parseAndVerifyToken(token);
     } catch (io.jsonwebtoken.JwtException e) {
       throw new IllegalArgumentException("Invalid JWT token", e);
     }
   }
 
+  private Claims parseAndVerifyToken(String token) {
+    return Jwts.parser()
+        .verifyWith(getSignKey())
+        .build()
+        .parseSignedClaims(token)
+        .getPayload();
+  }
   public Date extractExpiration(String token) {
     return extractClaim(token, Claims::getExpiration);
   }
