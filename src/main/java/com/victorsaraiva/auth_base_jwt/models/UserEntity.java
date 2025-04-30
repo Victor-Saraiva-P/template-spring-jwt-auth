@@ -2,9 +2,8 @@ package com.victorsaraiva.auth_base_jwt.models;
 
 import com.victorsaraiva.auth_base_jwt.models.enums.Role;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
