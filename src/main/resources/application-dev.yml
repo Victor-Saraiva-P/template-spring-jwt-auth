@@ -11,6 +11,3 @@ security:
         secret: "chaveParaDesenvolvimentoTrocarQuandoEntrarEmProducao" # Trocar na produção
         expiration: 900000  # 15 minutos em milissegundos
 
-# Configurações da API
-api:
-    base-url: "/api/v1"

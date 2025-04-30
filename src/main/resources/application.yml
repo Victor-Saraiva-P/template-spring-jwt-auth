@@ -16,3 +16,7 @@ spring:
 logging:
     level:
         root: info
+
+# Configurações da API
+api:
+    base-url: "/api/v1"
