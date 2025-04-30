@@ -24,9 +24,9 @@ public class SecurityConfig {
   @Value("${api.base-url}")
   private String apiBasePath;
 
-  public final JwtAuthFilter jwtAuthFilter;
-  public final UserDetailsServiceImpl userDetailsService;
-  public final PasswordEncoder passwordEncoder;
+  private final JwtAuthFilter jwtAuthFilter;
+  private final UserDetailsServiceImpl userDetailsService;
+  private final PasswordEncoder passwordEncoder;
 
   public SecurityConfig(
       JwtAuthFilter jwtAuthFilter,
