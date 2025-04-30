@@ -18,35 +18,35 @@ import java.util.Map;
 @RequestMapping("${api.base-url}/auth")
 public class AuthController {
 
-    private final AuthService authService;
+  private final AuthService authService;
 
-    private final JwtService jwtService;
+  private final JwtService jwtService;
 
-    public AuthController(AuthService authService, JwtService jwtService) {
-        this.authService = authService;
-        this.jwtService = jwtService;
-    }
+  public AuthController(AuthService authService, JwtService jwtService) {
+    this.authService = authService;
+    this.jwtService = jwtService;
+  }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDTO> register(@Valid @RequestBody CreateUserDTO createUserDTO) {
-        UserDTO registeredUser = this.authService.register(createUserDTO);
+  @PostMapping("/register")
+  public ResponseEntity<UserDTO> register(@Valid @RequestBody CreateUserDTO createUserDTO) {
+    UserDTO registeredUser = this.authService.register(createUserDTO);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
-    }
+    return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
-        UserEntity userEntity = authService.login(loginUserDTO);
+  @PostMapping("/login")
+  public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
+    UserEntity userEntity = authService.login(loginUserDTO);
 
-        // Gera o token JWT
-        String acessToken = jwtService.generateToken(userEntity);
+    // Gera o token JWT
+    String acessToken = jwtService.generateToken(userEntity);
 
-        return ResponseEntity.ok(Map.of("acessToken", acessToken));
-    }
+    return ResponseEntity.ok(Map.of("acessToken", acessToken));
+  }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @GetMapping("/ping")
-    public String test() {
-        return "Olá mundo";
-    }
+  @PreAuthorize("hasRole('ADMIN')")
+  @GetMapping("/ping")
+  public String test() {
+    return "Olá mundo";
+  }
 }
