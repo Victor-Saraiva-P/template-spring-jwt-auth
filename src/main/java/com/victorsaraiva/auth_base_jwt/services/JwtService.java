@@ -42,7 +42,7 @@ public class JwtService {
         .subject(subject)
         .issuedAt(Date.from(now))
         .expiration(Date.from(exp))
-        .signWith(getSignKey(), SignatureAlgorithm.HS256)
+        .signWith(getSignKey(), Jwts.SIG.HS256)
         .compact();
   }
 
