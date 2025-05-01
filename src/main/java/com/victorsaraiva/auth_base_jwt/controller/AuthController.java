@@ -38,9 +38,9 @@ public class AuthController {
     UserEntity userEntity = authService.login(loginUserDTO);
 
     // Gera o token JWT
-    String acessToken = jwtService.generateToken(userEntity);
+    String accessToken = jwtService.generateToken(userEntity);
 
-    return ResponseEntity.ok(Map.of("acessToken", acessToken));
+    return ResponseEntity.ok(Map.of("accessToken", accessToken));
   }
 
   @PreAuthorize("hasRole('ADMIN')")
