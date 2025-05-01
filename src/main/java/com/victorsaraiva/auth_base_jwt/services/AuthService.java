@@ -6,7 +6,6 @@ import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.EmailAlreadyExistsException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidCredentialException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.UserOperationException;
-import com.victorsaraiva.auth_base_jwt.exceptions.user.UsernameAlreadyExistsException;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
@@ -37,10 +36,6 @@ public class AuthService {
     // Verifica se o e-mail já está cadastrado
     if (userRepository.findByEmail(createUserDTO.getEmail()).isPresent()) {
       throw new EmailAlreadyExistsException(createUserDTO.getEmail());
-    }
-    // Verifica se o username já está cadastrado
-    if (userRepository.findByUsername(createUserDTO.getUsername()).isPresent()) {
-      throw new UsernameAlreadyExistsException(createUserDTO.getUsername());
     }
 
     try {
