@@ -56,11 +56,7 @@ public class JwtService {
   }
 
   private Claims extractAllClaims(String token) {
-    try {
-      return parseAndVerifyToken(token);
-    } catch (io.jsonwebtoken.JwtException e) {
-      throw new IllegalArgumentException("Invalid JWT token", e);
-    }
+    return parseAndVerifyToken(token);
   }
 
   private Claims parseAndVerifyToken(String token) {
