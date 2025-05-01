@@ -4,7 +4,7 @@ import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.EmailAlreadyExistsException;
-import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidCredentialException;
+import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidCredentialsException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.UserOperationException;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
@@ -56,13 +56,13 @@ public class AuthService {
     UserEntity userFoundByEmail =
         userRepository
             .findByEmail(loginUserDTO.getEmail())
-            .orElseThrow(InvalidCredentialException::new);
+            .orElseThrow(InvalidCredentialsException::new);
 
     // Verifica se a senha informada é a mesma que a senha cadastrada
     if (passwordEncoder.matches(loginUserDTO.getPassword(), userFoundByEmail.getPassword())) {
       return userFoundByEmail;
     }
     // Senão encontrar a senha é inválida
-    throw new InvalidCredentialException();
+    throw new InvalidCredentialsException();
   }
 }
