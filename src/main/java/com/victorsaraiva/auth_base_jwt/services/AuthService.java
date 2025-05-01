@@ -3,9 +3,10 @@ package com.victorsaraiva.auth_base_jwt.services;
 import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
-import com.victorsaraiva.auth_base_jwt.exceptions.user.EmailNotFoundException;
-import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidPasswordException;
+import com.victorsaraiva.auth_base_jwt.exceptions.user.EmailAlreadyExistsException;
+import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidCredentialException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.UserOperationException;
+import com.victorsaraiva.auth_base_jwt.exceptions.user.UsernameAlreadyExistsException;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
@@ -33,6 +34,15 @@ public class AuthService {
   }
 
   public UserDTO register(@Valid CreateUserDTO createUserDTO) {
+    // Verifica se o e-mail já está cadastrado
+    if (userRepository.findByEmail(createUserDTO.getEmail()).isPresent()) {
+      throw new EmailAlreadyExistsException(createUserDTO.getEmail());
+    }
+    // Verifica se o username já está cadastrado
+    if (userRepository.findByUsername(createUserDTO.getUsername()).isPresent()) {
+      throw new UsernameAlreadyExistsException(createUserDTO.getUsername());
+    }
+
     try {
       // Converte o dto para entidade
       UserEntity user = createUserDTOMapper.mapFrom(createUserDTO);
@@ -51,13 +61,13 @@ public class AuthService {
     UserEntity userFoundByEmail =
         userRepository
             .findByEmail(loginUserDTO.getEmail())
-            .orElseThrow(() -> new EmailNotFoundException(loginUserDTO.getEmail()));
+            .orElseThrow(InvalidCredentialException::new);
 
     // Verifica se a senha informada é a mesma que a senha cadastrada
     if (passwordEncoder.matches(loginUserDTO.getPassword(), userFoundByEmail.getPassword())) {
       return userFoundByEmail;
     }
     // Senão encontrar a senha é inválida
-    throw new InvalidPasswordException();
+    throw new InvalidCredentialException();
   }
 }
