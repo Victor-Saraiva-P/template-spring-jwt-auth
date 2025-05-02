@@ -4,7 +4,6 @@ import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshT
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
-import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +17,7 @@ public class RefreshTokenService {
   private final RefreshTokenRepository refreshTokenRepository;
 
   public RefreshTokenService(
-      RefreshTokenRepository refreshTokenRepository, UserRepository userRepository) {
+      RefreshTokenRepository refreshTokenRepository) {
     this.refreshTokenRepository = refreshTokenRepository;
   }
 
