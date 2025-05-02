@@ -1,9 +1,8 @@
 package com.victorsaraiva.auth_base_jwt.models;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.time.Instant;
+import lombok.*;
 
 @Data
 @NoArgsConstructor
