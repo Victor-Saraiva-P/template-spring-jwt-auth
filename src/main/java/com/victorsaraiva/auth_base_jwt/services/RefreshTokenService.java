@@ -16,8 +16,7 @@ public class RefreshTokenService {
 
   private final RefreshTokenRepository refreshTokenRepository;
 
-  public RefreshTokenService(
-      RefreshTokenRepository refreshTokenRepository) {
+  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
     this.refreshTokenRepository = refreshTokenRepository;
   }
 
