@@ -1,8 +1,8 @@
 package com.victorsaraiva.auth_base_jwt.services;
 
-import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginUserRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.RegisterUserRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.EmailAlreadyExistsException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidCredentialsException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.UserOperationException;
@@ -18,29 +18,29 @@ public class AuthService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
-  private final Mapper<UserEntity, CreateUserDTO> createUserDTOMapper;
-  private final Mapper<UserEntity, UserDTO> userDTOMapper;
+  private final Mapper<UserEntity, RegisterUserRequestDTO> createUserDTOMapper;
+  private final Mapper<UserEntity, UserResponseDTO> userDTOMapper;
 
   public AuthService(
       UserRepository userRepository,
       PasswordEncoder passwordEncoder,
-      Mapper<UserEntity, CreateUserDTO> createUserDTOMapper,
-      Mapper<UserEntity, UserDTO> userDTOMapper) {
+      Mapper<UserEntity, RegisterUserRequestDTO> createUserDTOMapper,
+      Mapper<UserEntity, UserResponseDTO> userDTOMapper) {
     this.userRepository = userRepository;
     this.passwordEncoder = passwordEncoder;
     this.createUserDTOMapper = createUserDTOMapper;
     this.userDTOMapper = userDTOMapper;
   }
 
-  public UserDTO register(@Valid CreateUserDTO createUserDTO) {
+  public UserResponseDTO register(@Valid RegisterUserRequestDTO registerUserRequestDTO) {
     // Verifica se o e-mail já está cadastrado
-    if (userRepository.findByEmail(createUserDTO.getEmail()).isPresent()) {
-      throw new EmailAlreadyExistsException(createUserDTO.getEmail());
+    if (userRepository.findByEmail(registerUserRequestDTO.getEmail()).isPresent()) {
+      throw new EmailAlreadyExistsException(registerUserRequestDTO.getEmail());
     }
 
     try {
       // Converte o dto para entidade
-      UserEntity user = createUserDTOMapper.mapFrom(createUserDTO);
+      UserEntity user = createUserDTOMapper.mapFrom(registerUserRequestDTO);
 
       // Encode da senha
       user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -52,14 +52,15 @@ public class AuthService {
     }
   }
 
-  public UserEntity login(LoginUserDTO loginUserDTO) {
+  public UserEntity login(LoginUserRequestDTO loginUserRequestDTO) {
     UserEntity userFoundByEmail =
         userRepository
-            .findByEmail(loginUserDTO.getEmail())
+            .findByEmail(loginUserRequestDTO.getEmail())
             .orElseThrow(InvalidCredentialsException::new);
 
     // Verifica se a senha informada é a mesma que a senha cadastrada
-    if (passwordEncoder.matches(loginUserDTO.getPassword(), userFoundByEmail.getPassword())) {
+    if (passwordEncoder.matches(
+        loginUserRequestDTO.getPassword(), userFoundByEmail.getPassword())) {
       return userFoundByEmail;
     }
     // Senão encontrar a senha é inválida

@@ -1,12 +1,11 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.services.JwtService;
+import com.victorsaraiva.auth_base_jwt.services.AcessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,14 +14,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-  private final JwtService jwtService;
+  private final AcessTokenService acessTokenService;
   private final UserDetailsServiceImpl userDetailsService;
 
-  public JwtAuthFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
-    this.jwtService = jwtService;
+  public JwtAuthFilter(
+      AcessTokenService acessTokenService, UserDetailsServiceImpl userDetailsService) {
+    this.acessTokenService = acessTokenService;
     this.userDetailsService = userDetailsService;
   }
 
@@ -40,14 +42,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
       token = authHeader.substring(7);
-      email = jwtService.extractEmail(token);
+      email = acessTokenService.extractEmail(token);
     }
 
     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
       UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-      if (jwtService.isTokenValid(token, userDetails)) {
+      if (acessTokenService.isTokenValid(token, userDetails)) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(
