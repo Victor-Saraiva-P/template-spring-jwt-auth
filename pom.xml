@@ -32,6 +32,7 @@
         <postgres.driver.version>42.7.3</postgres.driver.version>
         <testcontainers.version>1.21.0</testcontainers.version>
         <spotless.version>2.44.4</spotless.version>
+        <lombok.version>1.18.38</lombok.version>
     </properties>
 
     <!-- ========================= -->
@@ -103,6 +104,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
 
@@ -138,10 +140,22 @@
     <!-- ========================= -->
     <build>
         <plugins>
-            <!-- Spring Boot -->
+            <!-- Maven -->
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
             </plugin>
 
             <!-- Flyway CLI (./mvnw flyway:migrate) -->
