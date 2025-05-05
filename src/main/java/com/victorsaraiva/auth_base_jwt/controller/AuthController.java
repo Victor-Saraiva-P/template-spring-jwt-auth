@@ -1,7 +1,7 @@
 package com.victorsaraiva.auth_base_jwt.controller;
 
 import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginUserRequestDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.auth.RegisterUserRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.SignupUserRequestDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.JwtResponseDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
@@ -37,10 +37,10 @@ public class AuthController {
     this.refreshTokenService = refreshTokenService;
   }
 
-  @PostMapping("/register")
-  public ResponseEntity<UserResponseDTO> register(
-      @Valid @RequestBody RegisterUserRequestDTO registerUserRequestDTO) {
-    UserResponseDTO registeredUser = this.authService.register(registerUserRequestDTO);
+  @PostMapping("/signup")
+  public ResponseEntity<UserResponseDTO> signup(
+      @Valid @RequestBody SignupUserRequestDTO signupUserRequestDTO) {
+    UserResponseDTO registeredUser = this.authService.signup(signupUserRequestDTO);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
   }
