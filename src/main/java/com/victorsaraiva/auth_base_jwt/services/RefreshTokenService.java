@@ -22,7 +22,7 @@ public class RefreshTokenService {
   public RefreshTokenEntity createRefreshToken(UserEntity user) {
     RefreshTokenEntity refreshToken =
         RefreshTokenEntity.builder()
-            .refreshToken(java.util.UUID.randomUUID().toString())
+            .token(java.util.UUID.randomUUID().toString())
             .user(user)
             .expiryDate(Instant.now().plusMillis(EXPIRATION))
             .build();
@@ -31,27 +31,32 @@ public class RefreshTokenService {
   }
 
   public RefreshTokenEntity validateRefreshToken(String refreshToken) {
-    RefreshTokenEntity refreshTokenEntity = findByRefreshToken(refreshToken);
+    RefreshTokenEntity refreshTokenEntity = findByToken(refreshToken);
 
     if (isRefreshTokenExpired(refreshTokenEntity)) {
-      deleteRefreshToken(refreshTokenEntity);
+      deleteByRefreshToken(refreshTokenEntity);
       throw new InvalidRefreshTokenException(refreshToken);
     }
 
     return refreshTokenEntity;
   }
 
-  public RefreshTokenEntity findByRefreshToken(String refreshToken) {
+  public RefreshTokenEntity findByToken(String token) {
     return refreshTokenRepository
-        .findByRefreshToken(refreshToken)
-        .orElseThrow(() -> new InvalidRefreshTokenException(refreshToken));
+        .findByToken(token)
+        .orElseThrow(() -> new InvalidRefreshTokenException(token));
   }
 
   public boolean isRefreshTokenExpired(RefreshTokenEntity refreshToken) {
     return refreshToken.getExpiryDate().isBefore(Instant.now());
   }
 
-  public void deleteRefreshToken(RefreshTokenEntity refreshToken) {
+  public void deleteByRefreshToken(RefreshTokenEntity refreshToken) {
     refreshTokenRepository.delete(refreshToken);
+  }
+
+  public void deleteByToken(String token) {
+    RefreshTokenEntity refreshTokenEntity = findByToken(token);
+    deleteByRefreshToken(refreshTokenEntity);
   }
 }

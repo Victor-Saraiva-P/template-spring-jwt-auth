@@ -2,8 +2,7 @@ package com.victorsaraiva.auth_base_jwt.controller;
 
 import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginUserRequestDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.auth.SignupUserRequestDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.jwt.JwtResponseDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.AcessTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
@@ -46,8 +45,10 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<JwtResponseDTO> login(
+  public ResponseEntity<AcessTokenDTO> login(
       @Valid @RequestBody LoginUserRequestDTO loginUserRequestDTO) {
+
+    // Extrai o usuario do request
     UserEntity userEntity = authService.login(loginUserRequestDTO);
 
     // Gera o acessToken JWT
@@ -56,21 +57,31 @@ public class AuthController {
     // Gera o refreshToken
     RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(userEntity);
 
-    return ResponseEntity.ok(new JwtResponseDTO(accessToken, refreshToken.getRefreshToken()));
+    // Adiciona o refreshToken no cookie
+    ResponseCookie cookie =
+        ResponseCookie.from("refreshToken", refreshToken.getToken())
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(REFRESH_TOKEN_EXPIRATION)
+            .build();
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(new AcessTokenDTO(accessToken));
   }
 
   @PostMapping("/refreshToken")
-  public ResponseEntity<JwtResponseDTO> refreshToken(
-      @Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
+  public ResponseEntity<AcessTokenDTO> refreshToken(
+      @CookieValue("refreshToken") String oldRefreshToken) {
     // Valida o refreshToken
-    RefreshTokenEntity refreshTokenUsed =
-        refreshTokenService.validateRefreshToken(refreshTokenDTO.getRefreshToken());
+    RefreshTokenEntity oldRt = refreshTokenService.validateRefreshToken(oldRefreshToken);
 
     // Estabelece quem é o usuario
-    UserEntity user = refreshTokenUsed.getUser();
+    UserEntity user = oldRt.getUser();
 
     // Deleta o refreshToken usado
-    refreshTokenService.deleteRefreshToken(refreshTokenUsed);
+    refreshTokenService.deleteByRefreshToken(oldRt);
 
     // Gera um novo refreshToken
     RefreshTokenEntity newRefreshToken = refreshTokenService.createRefreshToken(user);
@@ -78,7 +89,18 @@ public class AuthController {
     // Gera o accessToken JWT
     String accessToken = accessTokenService.generateToken(user);
 
-    return ResponseEntity.ok(new JwtResponseDTO(accessToken, newRefreshToken.getRefreshToken()));
+    // Adiciona o refreshToken no cookie
+    ResponseCookie cookie =
+        ResponseCookie.from("refreshToken", newRefreshToken.getToken())
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(REFRESH_TOKEN_EXPIRATION)
+            .build();
+
+    return ResponseEntity.ok()
+        .header(HttpHeaders.SET_COOKIE, cookie.toString())
+        .body(new AcessTokenDTO(accessToken));
   }
 
   @PreAuthorize("hasRole('ADMIN')")

@@ -30,6 +30,7 @@ public class AccessTokenService {
     claims.put("username", user.getUsername());
     claims.put("email", user.getEmail());
     claims.put("role", user.getRole().name());
+
     return buildToken(claims, user.getId().toString());
   }
 
