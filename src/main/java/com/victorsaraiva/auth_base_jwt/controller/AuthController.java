@@ -58,7 +58,8 @@ public class AuthController {
   }
 
   @PostMapping("/refreshToken")
-  public ResponseEntity<JwtResponseDTO> refreshToken(@Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
+  public ResponseEntity<JwtResponseDTO> refreshToken(
+      @Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
     // Valida o refreshToken
     RefreshTokenEntity refreshTokenUsed =
         refreshTokenService.validateRefreshToken(refreshTokenDTO.getRefreshToken());
