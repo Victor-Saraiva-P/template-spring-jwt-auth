@@ -63,15 +63,17 @@ public class AuthController {
     RefreshTokenEntity refreshTokenUsed =
         refreshTokenService.validateRefreshToken(refreshTokenDTO.getRefreshToken());
 
+    // Estabelece quem é o usuario
+    UserEntity user = refreshTokenUsed.getUser();
+
     // Deleta o refreshToken usado
     refreshTokenService.deleteRefreshToken(refreshTokenUsed);
 
     // Gera um novo refreshToken
-    RefreshTokenEntity newRefreshToken =
-        refreshTokenUsed = refreshTokenService.createRefreshToken(refreshTokenUsed.getUser());
+    RefreshTokenEntity newRefreshToken = refreshTokenService.createRefreshToken(user);
 
     // Gera o acessToken JWT
-    String accessToken = accessTokenService.generateToken(refreshTokenUsed.getUser());
+    String accessToken = accessTokenService.generateToken(user);
 
     return ResponseEntity.ok(new JwtResponseDTO(accessToken, newRefreshToken.getRefreshToken()));
   }
