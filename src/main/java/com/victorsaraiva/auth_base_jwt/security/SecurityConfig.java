@@ -12,7 +12,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -42,15 +41,27 @@ public class SecurityConfig {
     return http.csrf(AbstractHttpConfigurer::disable)
         .cors(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            authorize ->
-                authorize
-                    .requestMatchers(apiBasePath + "/auth/**")
+            auth ->
+                auth
+
+                    // rotas públicas
+                    .requestMatchers(
+                        apiBasePath + "/auth/login",
+                        apiBasePath + "/auth/signup",
+                        apiBasePath + "/auth/refreshToken")
                     .permitAll()
+
+                    // rotas que precisam de autenticação
+                    .requestMatchers(apiBasePath + "/auth/logout")
+                    .authenticated()
+
+                    // rotas que precisam ser admin
+                    .requestMatchers(apiBasePath + "/auth/ping")
+                    .hasRole("ADMIN")
+
+                    // rotas padrão
                     .anyRequest()
                     .authenticated())
-        .sessionManagement(
-            session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authenticationProvider(authenticationProvider())
         .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
