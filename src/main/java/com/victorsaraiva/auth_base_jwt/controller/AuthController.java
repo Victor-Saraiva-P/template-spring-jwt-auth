@@ -11,6 +11,7 @@ import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
 import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("${api.base-url}/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
   private final AuthService authService;
