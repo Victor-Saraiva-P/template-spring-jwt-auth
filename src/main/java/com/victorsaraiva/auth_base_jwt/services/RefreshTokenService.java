@@ -34,7 +34,7 @@ public class RefreshTokenService {
     RefreshTokenEntity refreshTokenEntity = findByToken(refreshToken);
 
     if (isRefreshTokenExpired(refreshTokenEntity)) {
-      deleteByRefreshToken(refreshTokenEntity);
+      deleteByRefreshTokenEntity(refreshTokenEntity);
       throw new InvalidRefreshTokenException(refreshToken);
     }
 
@@ -51,12 +51,12 @@ public class RefreshTokenService {
     return refreshToken.getExpiryDate().isBefore(Instant.now());
   }
 
-  public void deleteByRefreshToken(RefreshTokenEntity refreshToken) {
+  public void deleteByRefreshTokenEntity(RefreshTokenEntity refreshToken) {
     refreshTokenRepository.delete(refreshToken);
   }
 
   public void deleteByToken(String token) {
     RefreshTokenEntity refreshTokenEntity = findByToken(token);
-    deleteByRefreshToken(refreshTokenEntity);
+    deleteByRefreshTokenEntity(refreshTokenEntity);
   }
 }
