@@ -27,14 +27,7 @@ public class AuthController {
 
   private final RefreshTokenService refreshTokenService;
 
-  public AuthController(
-      AuthService authService,
-      AccessTokenService accessTokenService,
-      RefreshTokenService refreshTokenService) {
-    this.authService = authService;
-    this.accessTokenService = accessTokenService;
-    this.refreshTokenService = refreshTokenService;
-  }
+  private final BlacklistService blacklistService;
 
   @PostMapping("/signup")
   public ResponseEntity<UserResponseDTO> signup(
