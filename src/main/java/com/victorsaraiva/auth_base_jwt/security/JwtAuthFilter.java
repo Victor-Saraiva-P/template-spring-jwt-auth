@@ -34,7 +34,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     String authHeader = request.getHeader("Authorization");
 
-    // Incialização das variáveis
+    // Inicialização das variáveis
     String token = null;
     String email = null; // email pois é o identificador único do usuário
     String jti = null;
