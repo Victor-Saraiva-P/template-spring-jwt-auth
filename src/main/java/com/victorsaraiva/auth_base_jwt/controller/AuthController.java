@@ -8,18 +8,26 @@ import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
+import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
 import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("${api.base-url}/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
+  @Value("${security.refresh-token.expiration}")
+  private long REFRESH_TOKEN_EXPIRATION; // em milissegundos
 
   private final AuthService authService;
 
@@ -96,7 +104,25 @@ public class AuthController {
         .body(new AcessTokenDTO(accessToken));
   }
 
-  @PreAuthorize("hasRole('ADMIN')")
+  @PostMapping("/logout")
+  public ResponseEntity<Void> logout(
+      @RequestHeader("Authorization") String authHeader,
+      @CookieValue("refreshToken") String refreshToken) {
+
+    String accessToken = authHeader.replace("Bearer ", "");
+
+    // Extrai claims do access token
+    String jti = accessTokenService.extractId(accessToken);
+    Date exp = accessTokenService.extractExpiration(accessToken);
+
+    // Adiciona o access token à blacklist
+    blacklistService.blacklist(jti, exp.toInstant());
+
+    // Deleta o refresh token
+    refreshTokenService.deleteByToken(refreshToken);
+    return ResponseEntity.noContent().build();
+  }
+
   @GetMapping("/ping")
   public String test() {
     return "Olá mundo";
