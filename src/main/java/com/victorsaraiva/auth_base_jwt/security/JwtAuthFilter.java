@@ -1,12 +1,13 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
 import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
+import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
 import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,17 +16,15 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+
 @Component
+@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
   private final AccessTokenService accessTokenService;
   private final UserDetailsServiceImpl userDetailsService;
-
-  public JwtAuthFilter(
-      AccessTokenService accessTokenService, UserDetailsServiceImpl userDetailsService) {
-    this.accessTokenService = accessTokenService;
-    this.userDetailsService = userDetailsService;
-  }
+  private final BlacklistService blacklistService;
 
   @Override
   protected void doFilterInternal(
@@ -35,13 +34,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
 
     String authHeader = request.getHeader("Authorization");
+
+    // Incialização das variáveis
     String token = null;
     String email = null; // email pois é o identificador único do usuário
+    String jti = null;
 
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
       token = authHeader.substring(7);
       email = accessTokenService.extractEmail(token);
+      jti = accessTokenService.extractId(token);
+    }
+
+    // Verifica se o token foi invalidado
+    if (jti != null && blacklistService.isBlacklisted(jti)) {
+      response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+      return;
     }
 
     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
