@@ -2,7 +2,7 @@ package com.victorsaraiva.auth_base_jwt.controller;
 
 import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginUserRequestDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.auth.SignupUserRequestDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.jwt.AcessTokenDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.AccessTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
@@ -11,7 +11,6 @@ import com.victorsaraiva.auth_base_jwt.services.AuthService;
 import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
 import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
 import jakarta.validation.Valid;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -19,6 +18,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("${api.base-url}/auth")
@@ -45,7 +46,7 @@ public class AuthController {
   }
 
   @PostMapping("/login")
-  public ResponseEntity<AcessTokenDTO> login(
+  public ResponseEntity<AccessTokenDTO> login(
       @Valid @RequestBody LoginUserRequestDTO loginUserRequestDTO) {
 
     // Extrai o usuario do request
@@ -68,11 +69,11 @@ public class AuthController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(new AcessTokenDTO(accessToken));
+        .body(new AccessTokenDTO(accessToken));
   }
 
   @PostMapping("/refreshToken")
-  public ResponseEntity<AcessTokenDTO> refreshToken(
+  public ResponseEntity<AccessTokenDTO> refreshToken(
       @CookieValue("refreshToken") String oldRefreshToken) {
     // Valida o refreshToken
     RefreshTokenEntity oldRt = refreshTokenService.validateRefreshToken(oldRefreshToken);
@@ -100,7 +101,7 @@ public class AuthController {
 
     return ResponseEntity.ok()
         .header(HttpHeaders.SET_COOKIE, cookie.toString())
-        .body(new AcessTokenDTO(accessToken));
+        .body(new AccessTokenDTO(accessToken));
   }
 
   @PostMapping("/logout")
