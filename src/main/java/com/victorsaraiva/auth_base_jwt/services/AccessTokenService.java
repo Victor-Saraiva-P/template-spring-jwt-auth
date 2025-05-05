@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JwtService {
+public class AccessTokenService {
 
   @Value("${security.access-jwt.secret}")
   private String SECRET;
@@ -73,10 +73,6 @@ public class JwtService {
 
   public String extractRole(String token) {
     return extractClaim(token, claims -> claims.get("role", String.class));
-  }
-
-  public String extractUsername(String token) {
-    return extractClaim(token, claims -> claims.get("username", String.class));
   }
 
   private boolean isTokenExpired(String token) {

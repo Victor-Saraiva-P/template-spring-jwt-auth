@@ -1,13 +1,16 @@
 package com.victorsaraiva.auth_base_jwt.controller;
 
-import com.victorsaraiva.auth_base_jwt.dtos.user.CreateUserDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.user.LoginUserDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginUserRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.RegisterUserRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.JwtResponseDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
+import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
+import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
-import com.victorsaraiva.auth_base_jwt.services.JwtService;
+import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
 import jakarta.validation.Valid;
-import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -19,28 +22,61 @@ public class AuthController {
 
   private final AuthService authService;
 
-  private final JwtService jwtService;
+  private final AccessTokenService accessTokenService;
 
-  public AuthController(AuthService authService, JwtService jwtService) {
+  private final RefreshTokenService refreshTokenService;
+
+  public AuthController(
+      AuthService authService,
+      AccessTokenService accessTokenService,
+      RefreshTokenService refreshTokenService) {
     this.authService = authService;
-    this.jwtService = jwtService;
+    this.accessTokenService = accessTokenService;
+    this.refreshTokenService = refreshTokenService;
   }
 
   @PostMapping("/register")
-  public ResponseEntity<UserDTO> register(@Valid @RequestBody CreateUserDTO createUserDTO) {
-    UserDTO registeredUser = this.authService.register(createUserDTO);
+  public ResponseEntity<UserResponseDTO> register(
+      @Valid @RequestBody RegisterUserRequestDTO registerUserRequestDTO) {
+    UserResponseDTO registeredUser = this.authService.register(registerUserRequestDTO);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
   }
 
   @PostMapping("/login")
-  public ResponseEntity<Map<String, String>> login(@Valid @RequestBody LoginUserDTO loginUserDTO) {
-    UserEntity userEntity = authService.login(loginUserDTO);
+  public ResponseEntity<JwtResponseDTO> login(
+      @Valid @RequestBody LoginUserRequestDTO loginUserRequestDTO) {
+    UserEntity userEntity = authService.login(loginUserRequestDTO);
 
-    // Gera o token JWT
-    String accessToken = jwtService.generateToken(userEntity);
+    // Gera o acessToken JWT
+    String accessToken = accessTokenService.generateToken(userEntity);
 
-    return ResponseEntity.ok(Map.of("accessToken", accessToken));
+    // Gera o refreshToken
+    RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(userEntity);
+
+    return ResponseEntity.ok(new JwtResponseDTO(accessToken, refreshToken.getRefreshToken()));
+  }
+
+  @PostMapping("/refreshToken")
+  public ResponseEntity<JwtResponseDTO> refreshToken(
+      @Valid @RequestBody RefreshTokenDTO refreshTokenDTO) {
+    // Valida o refreshToken
+    RefreshTokenEntity refreshTokenUsed =
+        refreshTokenService.validateRefreshToken(refreshTokenDTO.getRefreshToken());
+
+    // Estabelece quem é o usuario
+    UserEntity user = refreshTokenUsed.getUser();
+
+    // Deleta o refreshToken usado
+    refreshTokenService.deleteRefreshToken(refreshTokenUsed);
+
+    // Gera um novo refreshToken
+    RefreshTokenEntity newRefreshToken = refreshTokenService.createRefreshToken(user);
+
+    // Gera o accessToken JWT
+    String accessToken = accessTokenService.generateToken(user);
+
+    return ResponseEntity.ok(new JwtResponseDTO(accessToken, newRefreshToken.getRefreshToken()));
   }
 
   @PreAuthorize("hasRole('ADMIN')")

@@ -13,3 +13,6 @@ security:
         secret: "chaveParaPropositoDeTestesApenasNaoUsarEmProducao" # Trocar na produção
         expiration: 900000  # 15 minutos em milissegundos
 
+    refresh-token:
+        expiration: 2592000000 # 30 dias em milissegundos
+

@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.dtos.user;
+package com.victorsaraiva.auth_base_jwt.dtos.auth;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserDTO {
+public class RegisterUserRequestDTO {
 
   @NotBlank(message = "O username é obrigatório")
   private String username;

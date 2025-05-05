@@ -1,6 +1,6 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.services.JwtService;
+import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,11 +18,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-  private final JwtService jwtService;
+  private final AccessTokenService accessTokenService;
   private final UserDetailsServiceImpl userDetailsService;
 
-  public JwtAuthFilter(JwtService jwtService, UserDetailsServiceImpl userDetailsService) {
-    this.jwtService = jwtService;
+  public JwtAuthFilter(
+      AccessTokenService accessTokenService, UserDetailsServiceImpl userDetailsService) {
+    this.accessTokenService = accessTokenService;
     this.userDetailsService = userDetailsService;
   }
 
@@ -40,14 +41,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
       token = authHeader.substring(7);
-      email = jwtService.extractEmail(token);
+      email = accessTokenService.extractEmail(token);
     }
 
     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
       UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-      if (jwtService.isTokenValid(token, userDetails)) {
+      if (accessTokenService.isTokenValid(token, userDetails)) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(

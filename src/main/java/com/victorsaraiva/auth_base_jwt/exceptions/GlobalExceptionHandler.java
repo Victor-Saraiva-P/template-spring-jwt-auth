@@ -1,5 +1,6 @@
 package com.victorsaraiva.auth_base_jwt.exceptions;
 
+import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshTokenException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.EmailAlreadyExistsException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.InvalidCredentialsException;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.UserOperationException;
@@ -109,6 +110,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             .build();
 
     log.warn("Acesso negado: {}", ex.getMessage());
+    return this.handleExceptionInternal(ex, apiError, new HttpHeaders(), status, webRequest);
+  }
+
+  // Handler para refresh token inválido
+  @ExceptionHandler(InvalidRefreshTokenException.class)
+  public ResponseEntity<Object> handleInvalidRefreshTokenException(
+      InvalidRefreshTokenException ex, WebRequest webRequest) {
+    HttpStatus status = HttpStatus.UNAUTHORIZED;
+    ApiErrorType apiErrorType = ApiErrorType.ERRO_DE_AUTENTICACAO;
+
+    ApiError apiError = createProblemaBuilder(status, apiErrorType, ex.getMessage()).build();
+
+    log.warn(ex.getMessage());
     return this.handleExceptionInternal(ex, apiError, new HttpHeaders(), status, webRequest);
   }
 
