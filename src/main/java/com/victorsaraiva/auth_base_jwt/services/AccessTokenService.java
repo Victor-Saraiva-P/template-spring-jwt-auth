@@ -9,6 +9,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Function;
 import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,7 @@ public class AccessTokenService {
     claims.put("username", user.getUsername());
     claims.put("email", user.getEmail());
     claims.put("role", user.getRole().name());
+
     return buildToken(claims, user.getId().toString());
   }
 
@@ -41,6 +43,7 @@ public class AccessTokenService {
         .subject(subject)
         .issuedAt(Date.from(now))
         .expiration(Date.from(exp))
+        .id(UUID.randomUUID().toString())
         .signWith(getSignKey(), Jwts.SIG.HS256)
         .compact();
   }
@@ -73,6 +76,10 @@ public class AccessTokenService {
 
   public String extractRole(String token) {
     return extractClaim(token, claims -> claims.get("role", String.class));
+  }
+
+  public String extractId(String token) {
+    return extractClaim(token, Claims::getId);
   }
 
   private boolean isTokenExpired(String token) {
