@@ -11,6 +11,7 @@ import com.victorsaraiva.auth_base_jwt.services.AuthService;
 import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
 import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
 import jakarta.validation.Valid;
+import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +19,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
 
 @RestController
 @RequestMapping("${api.base-url}/auth")
