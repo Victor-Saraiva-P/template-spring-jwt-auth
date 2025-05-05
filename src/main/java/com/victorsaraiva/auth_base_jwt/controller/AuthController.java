@@ -7,7 +7,7 @@ import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
-import com.victorsaraiva.auth_base_jwt.services.AcessTokenService;
+import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
 import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
 import jakarta.validation.Valid;
@@ -22,16 +22,16 @@ public class AuthController {
 
   private final AuthService authService;
 
-  private final AcessTokenService acessTokenService;
+  private final AccessTokenService accessTokenService;
 
   private final RefreshTokenService refreshTokenService;
 
   public AuthController(
       AuthService authService,
-      AcessTokenService acessTokenService,
+      AccessTokenService accessTokenService,
       RefreshTokenService refreshTokenService) {
     this.authService = authService;
-    this.acessTokenService = acessTokenService;
+    this.accessTokenService = accessTokenService;
     this.refreshTokenService = refreshTokenService;
   }
 
@@ -49,7 +49,7 @@ public class AuthController {
     UserEntity userEntity = authService.login(loginUserRequestDTO);
 
     // Gera o acessToken JWT
-    String accessToken = acessTokenService.generateToken(userEntity);
+    String accessToken = accessTokenService.generateToken(userEntity);
 
     // Gera o refreshToken
     RefreshTokenEntity refreshToken = refreshTokenService.createRefreshToken(userEntity);
@@ -71,7 +71,7 @@ public class AuthController {
         refreshTokenUsed = refreshTokenService.createRefreshToken(refreshTokenUsed.getUser());
 
     // Gera o acessToken JWT
-    String accessToken = acessTokenService.generateToken(refreshTokenUsed.getUser());
+    String accessToken = accessTokenService.generateToken(refreshTokenUsed.getUser());
 
     return ResponseEntity.ok(new JwtResponseDTO(accessToken, newRefreshToken.getRefreshToken()));
   }

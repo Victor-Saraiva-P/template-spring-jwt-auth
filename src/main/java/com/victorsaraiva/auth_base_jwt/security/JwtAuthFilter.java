@@ -1,12 +1,11 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.services.AcessTokenService;
+import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,15 +14,17 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.IOException;
+
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
-  private final AcessTokenService acessTokenService;
+  private final AccessTokenService accessTokenService;
   private final UserDetailsServiceImpl userDetailsService;
 
   public JwtAuthFilter(
-      AcessTokenService acessTokenService, UserDetailsServiceImpl userDetailsService) {
-    this.acessTokenService = acessTokenService;
+      AccessTokenService accessTokenService, UserDetailsServiceImpl userDetailsService) {
+    this.accessTokenService = accessTokenService;
     this.userDetailsService = userDetailsService;
   }
 
@@ -41,14 +42,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
       token = authHeader.substring(7);
-      email = acessTokenService.extractEmail(token);
+      email = accessTokenService.extractEmail(token);
     }
 
     if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 
       UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
-      if (acessTokenService.isTokenValid(token, userDetails)) {
+      if (accessTokenService.isTokenValid(token, userDetails)) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(
