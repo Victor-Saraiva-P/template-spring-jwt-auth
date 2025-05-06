@@ -1,6 +1,7 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
 import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,22 +20,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
   @Value("${api.base-url}")
   private String apiBasePath;
 
   private final JwtAuthFilter jwtAuthFilter;
   private final UserDetailsServiceImpl userDetailsService;
   private final PasswordEncoder passwordEncoder;
-
-  public SecurityConfig(
-      JwtAuthFilter jwtAuthFilter,
-      UserDetailsServiceImpl userDetailsService,
-      PasswordEncoder passwordEncoder) {
-    this.jwtAuthFilter = jwtAuthFilter;
-    this.userDetailsService = userDetailsService;
-    this.passwordEncoder = passwordEncoder;
-  }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

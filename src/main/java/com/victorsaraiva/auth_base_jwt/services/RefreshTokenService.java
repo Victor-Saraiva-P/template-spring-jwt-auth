@@ -5,19 +5,18 @@ import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
 import java.time.Instant;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
+
   @Value("${security.refresh-token.expiration}")
   private long EXPIRATION; // em milissegundos
 
   private final RefreshTokenRepository refreshTokenRepository;
-
-  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
-    this.refreshTokenRepository = refreshTokenRepository;
-  }
 
   public RefreshTokenEntity createRefreshToken(UserEntity user) {
     RefreshTokenEntity refreshToken =

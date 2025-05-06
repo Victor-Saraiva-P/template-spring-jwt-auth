@@ -29,11 +29,8 @@ public class AuthController {
   private long REFRESH_TOKEN_EXPIRATION; // em milissegundos
 
   private final AuthService authService;
-
   private final AccessTokenService accessTokenService;
-
   private final RefreshTokenService refreshTokenService;
-
   private final BlacklistService blacklistService;
 
   @PostMapping("/signup")

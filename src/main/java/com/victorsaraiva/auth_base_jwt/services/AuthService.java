@@ -10,27 +10,18 @@ import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
 
   private final UserRepository userRepository;
   private final PasswordEncoder passwordEncoder;
   private final Mapper<UserEntity, SignupUserRequestDTO> createUserDTOMapper;
   private final Mapper<UserEntity, UserResponseDTO> userDTOMapper;
-
-  public AuthService(
-      UserRepository userRepository,
-      PasswordEncoder passwordEncoder,
-      Mapper<UserEntity, SignupUserRequestDTO> createUserDTOMapper,
-      Mapper<UserEntity, UserResponseDTO> userDTOMapper) {
-    this.userRepository = userRepository;
-    this.passwordEncoder = passwordEncoder;
-    this.createUserDTOMapper = createUserDTOMapper;
-    this.userDTOMapper = userDTOMapper;
-  }
 
   public UserResponseDTO signup(@Valid SignupUserRequestDTO signupUserRequestDTO) {
     // Verifica se o e-mail já está cadastrado
