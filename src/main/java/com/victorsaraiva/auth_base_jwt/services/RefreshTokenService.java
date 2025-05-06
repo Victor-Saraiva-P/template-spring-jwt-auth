@@ -71,9 +71,14 @@ public class RefreshTokenService {
     refreshTokenRepository.delete(refreshToken);
   }
 
-  public void deleteById(Long tokenId) {
-    RefreshTokenEntity refreshTokenEntity = findById(tokenId);
-    deleteByRefreshTokenEntity(refreshTokenEntity);
+  public void deleteRefreshToken(String refreshToken, Long tokenId, UserEntity loggedUser) {
+    RefreshTokenEntity rt = validateRefreshToken(tokenId, refreshToken);
+
+    if (!rt.getUser().equals(loggedUser)) {
+      throw new InvalidRefreshTokenException(refreshToken);
+    }
+
+    deleteByRefreshTokenEntity(rt);
   }
 
   public CookieRefreshTokenDTO toCookie(RefreshTokenDTO refreshToken) {
