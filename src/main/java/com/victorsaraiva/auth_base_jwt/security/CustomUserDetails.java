@@ -3,15 +3,11 @@ package com.victorsaraiva.auth_base_jwt.security;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import java.util.Collection;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-@RequiredArgsConstructor
-public class CustomUserDetails implements UserDetails {
-
-  private final UserEntity user;
+public record CustomUserDetails(UserEntity user) implements UserDetails {
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
