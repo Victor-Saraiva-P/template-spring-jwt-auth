@@ -6,15 +6,14 @@ import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshT
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
