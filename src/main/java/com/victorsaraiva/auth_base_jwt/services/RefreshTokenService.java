@@ -75,4 +75,20 @@ public class RefreshTokenService {
     RefreshTokenEntity refreshTokenEntity = findById(tokenId);
     deleteByRefreshTokenEntity(refreshTokenEntity);
   }
+
+  public CookieRefreshTokenDTO toCookie(RefreshTokenDTO refreshToken) {
+    return new CookieRefreshTokenDTO(
+        ResponseCookie.from("refreshToken", refreshToken.token())
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofMillis(EXPIRATION))
+            .build(),
+        ResponseCookie.from("refreshTokenId", String.valueOf(refreshToken.id()))
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofMillis(EXPIRATION))
+            .build());
+  }
 }
