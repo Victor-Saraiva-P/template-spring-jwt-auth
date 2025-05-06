@@ -1,50 +1,65 @@
 package com.victorsaraiva.auth_base_jwt.services;
 
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.CookieRefreshTokenDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshTokenException;
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
+import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class RefreshTokenService {
-  @Value("${security.refresh-token.expiration}")
-  private long EXPIRATION; // em milissegundos
 
+  @Value("${security.refresh-token.expiration}")
+  private long refreshTokenExpiration; // em milissegundos
+
+  private final PasswordEncoder passwordEncoder;
   private final RefreshTokenRepository refreshTokenRepository;
 
-  public RefreshTokenService(RefreshTokenRepository refreshTokenRepository) {
-    this.refreshTokenRepository = refreshTokenRepository;
-  }
+  public RefreshTokenDTO createRefreshToken(UserEntity user) {
+    String rawToken = UUID.randomUUID().toString();
+    String hashedToken = passwordEncoder.encode(rawToken);
 
-  public RefreshTokenEntity createRefreshToken(UserEntity user) {
     RefreshTokenEntity refreshToken =
         RefreshTokenEntity.builder()
-            .token(java.util.UUID.randomUUID().toString())
+            .token(hashedToken)
             .user(user)
-            .expiryDate(Instant.now().plusMillis(EXPIRATION))
+            .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
             .build();
 
-    return refreshTokenRepository.save(refreshToken);
+    refreshToken = refreshTokenRepository.save(refreshToken);
+
+    // Cliente recebe os dois pedaços
+    return new RefreshTokenDTO(refreshToken.getId(), rawToken);
   }
 
-  public RefreshTokenEntity validateRefreshToken(String refreshToken) {
-    RefreshTokenEntity refreshTokenEntity = findByToken(refreshToken);
+  public RefreshTokenEntity validateRefreshToken(Long tokenId, String rawToken) {
 
-    if (isRefreshTokenExpired(refreshTokenEntity)) {
-      deleteByRefreshTokenEntity(refreshTokenEntity);
-      throw new InvalidRefreshTokenException(refreshToken);
+    RefreshTokenEntity entity = findById(tokenId);
+
+    if (isRefreshTokenExpired(entity)) {
+      refreshTokenRepository.delete(entity);
+      throw new InvalidRefreshTokenException(rawToken);
     }
 
-    return refreshTokenEntity;
+    if (!passwordEncoder.matches(rawToken, entity.getToken())) {
+      throw new InvalidRefreshTokenException(rawToken);
+    }
+
+    return entity;
   }
 
-  public RefreshTokenEntity findByToken(String token) {
-    return refreshTokenRepository
-        .findByToken(token)
-        .orElseThrow(() -> new InvalidRefreshTokenException(token));
+  public RefreshTokenEntity findById(Long tokenId) {
+    return refreshTokenRepository.findById(tokenId).orElseThrow(InvalidRefreshTokenException::new);
   }
 
   public boolean isRefreshTokenExpired(RefreshTokenEntity refreshToken) {
@@ -55,8 +70,29 @@ public class RefreshTokenService {
     refreshTokenRepository.delete(refreshToken);
   }
 
-  public void deleteByToken(String token) {
-    RefreshTokenEntity refreshTokenEntity = findByToken(token);
-    deleteByRefreshTokenEntity(refreshTokenEntity);
+  public void deleteRefreshToken(String refreshToken, Long tokenId, UserEntity loggedUser) {
+    RefreshTokenEntity rt = validateRefreshToken(tokenId, refreshToken);
+
+    if (!rt.getUser().equals(loggedUser)) {
+      throw new InvalidRefreshTokenException(refreshToken);
+    }
+
+    deleteByRefreshTokenEntity(rt);
+  }
+
+  public CookieRefreshTokenDTO toCookie(RefreshTokenDTO refreshToken) {
+    return new CookieRefreshTokenDTO(
+        ResponseCookie.from("refreshToken", refreshToken.token())
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofMillis(refreshTokenExpiration))
+            .build(),
+        ResponseCookie.from("refreshTokenId", String.valueOf(refreshToken.id()))
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofMillis(refreshTokenExpiration))
+            .build());
   }
 }

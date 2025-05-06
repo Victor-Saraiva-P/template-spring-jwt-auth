@@ -3,13 +3,14 @@ package com.victorsaraiva.auth_base_jwt.mappers.impl.user;
 import com.victorsaraiva.auth_base_jwt.dtos.auth.SignupUserRequestDTO;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class SignupUserRequestMapperImpl implements Mapper<UserEntity, SignupUserRequestDTO> {
+
   private final ModelMapper modelMapper;
 
   @Override
