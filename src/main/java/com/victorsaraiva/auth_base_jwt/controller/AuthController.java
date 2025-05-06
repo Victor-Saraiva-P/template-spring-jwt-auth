@@ -9,18 +9,19 @@ import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.security.CustomUserDetails;
-import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
-import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
-import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
+import com.victorsaraiva.auth_base_jwt.services.security.AccessTokenService;
+import com.victorsaraiva.auth_base_jwt.services.security.BlacklistService;
+import com.victorsaraiva.auth_base_jwt.services.security.RefreshTokenService;
 import jakarta.validation.Valid;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("${api.base-url}/auth")

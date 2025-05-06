@@ -1,6 +1,6 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
+import com.victorsaraiva.auth_base_jwt.services.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
