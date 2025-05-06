@@ -6,14 +6,15 @@ import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshT
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,17 +30,17 @@ public class RefreshTokenService {
     String rawToken = UUID.randomUUID().toString();
     String hashedToken = passwordEncoder.encode(rawToken);
 
-    RefreshTokenEntity entity =
+    RefreshTokenEntity refreshToken =
         RefreshTokenEntity.builder()
             .token(hashedToken)
             .user(user)
             .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
             .build();
 
-    entity = refreshTokenRepository.save(entity); // agora tem ID!
+    refreshToken = refreshTokenRepository.save(refreshToken);
 
     // Cliente recebe os dois pedaços
-    return new RefreshTokenDTO(entity.getId(), rawToken);
+    return new RefreshTokenDTO(refreshToken.getId(), rawToken);
   }
 
   public RefreshTokenEntity validateRefreshToken(Long tokenId, String rawToken) {
