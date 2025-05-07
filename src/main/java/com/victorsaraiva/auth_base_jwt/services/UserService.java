@@ -30,7 +30,7 @@ public class UserService {
 
   public void changeUserRole(ChangeRoleRequestDTO changeRoleRequestDTO, UUID userId) {
     UserEntity user =
-      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     user.setRole(changeRoleRequestDTO.getRoleEnum());
     userRepository.save(user);
@@ -40,7 +40,7 @@ public class UserService {
   @Transactional
   public void deleteUser(UUID userId) {
     UserEntity user =
-      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     // Remove todos os refresh tokens do usuario
     refreshTokenRepository.deleteAllByUserId(userId);
