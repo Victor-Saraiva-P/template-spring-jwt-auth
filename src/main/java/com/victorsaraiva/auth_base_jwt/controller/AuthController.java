@@ -14,13 +14,14 @@ import com.victorsaraiva.auth_base_jwt.services.security.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.security.BlacklistService;
 import com.victorsaraiva.auth_base_jwt.services.security.RefreshTokenService;
 import jakarta.validation.Valid;
-import java.util.Date;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @RestController
 @RequestMapping("${api.base-url}/auth")
@@ -49,7 +50,7 @@ public class AuthController {
     return generateTokensResponse(userEntity);
   }
 
-  @PostMapping("/refreshToken")
+  @PostMapping("/refresh-token")
   public ResponseEntity<AccessTokenDTO> refreshToken(
       @CookieValue("refreshToken") String oldRefreshToken,
       @CookieValue("refreshTokenId") Long oldRefreshTokenId) {
