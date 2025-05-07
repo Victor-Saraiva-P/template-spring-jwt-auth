@@ -4,10 +4,9 @@ import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

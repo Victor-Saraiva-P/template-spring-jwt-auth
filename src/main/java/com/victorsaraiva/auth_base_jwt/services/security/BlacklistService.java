@@ -1,12 +1,11 @@
 package com.victorsaraiva.auth_base_jwt.services.security;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.TimeUnit;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
