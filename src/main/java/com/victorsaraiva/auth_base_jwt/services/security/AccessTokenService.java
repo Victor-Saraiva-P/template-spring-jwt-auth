@@ -5,16 +5,17 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.crypto.SecretKey;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.crypto.SecretKey;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AccessTokenService {
@@ -80,6 +81,10 @@ public class AccessTokenService {
 
   public String extractId(String token) {
     return extractClaim(token, Claims::getId);
+  }
+
+  public String extractSubject(String token) {
+    return extractClaim(token, Claims::getSubject);
   }
 
   private boolean isTokenExpired(String token) {
