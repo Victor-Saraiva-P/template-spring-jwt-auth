@@ -12,7 +12,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginUserRequestDTO {
+public class SignupRequestDTO {
+
+  @NotBlank(message = "O username é obrigatório")
+  private String username;
 
   @NotBlank(message = "O email é obrigatório")
   @Email(message = "Formato de email inválido")
