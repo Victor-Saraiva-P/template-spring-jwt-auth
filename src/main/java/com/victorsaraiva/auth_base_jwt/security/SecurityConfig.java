@@ -42,7 +42,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         apiBasePath + "/auth/login",
                         apiBasePath + "/auth/signup",
-                        apiBasePath + "/auth/refreshToken")
+                        apiBasePath + "/auth/refresh-token")
                     .permitAll()
 
                     // rotas que precisam de autenticação
