@@ -8,13 +8,12 @@ import com.victorsaraiva.auth_base_jwt.security.CustomUserDetails;
 import com.victorsaraiva.auth_base_jwt.services.UserService;
 import com.victorsaraiva.auth_base_jwt.services.security.AccessTokenService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.base-url}/users")
