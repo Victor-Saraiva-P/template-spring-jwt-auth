@@ -6,11 +6,10 @@ import com.victorsaraiva.auth_base_jwt.exceptions.user.UserNotFoundException;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
