@@ -6,10 +6,11 @@ import com.victorsaraiva.auth_base_jwt.exceptions.user.UserNotFoundException;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
-import java.util.List;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -24,12 +25,12 @@ public class UserService {
     return userEntities.stream().map(userMapper::mapTo).toList();
   }
 
-  public UserDTO changeUserRole(ChangeRoleRequestDTO changeRoleRequestDTO, UUID userId) {
+  public void changeUserRole(ChangeRoleRequestDTO changeRoleRequestDTO, UUID userId) {
     UserEntity user =
         userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     user.setRole(changeRoleRequestDTO.getRoleEnum());
     userRepository.save(user);
-    return userMapper.mapTo(user);
+    userMapper.mapTo(user);
   }
 }
