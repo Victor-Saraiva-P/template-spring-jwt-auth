@@ -1,13 +1,14 @@
 package com.victorsaraiva.auth_base_jwt.controller;
 
+import com.victorsaraiva.auth_base_jwt.dtos.user.ChangeRoleRequestDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.services.UserService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.base-url}/users")
@@ -19,5 +20,12 @@ public class UserController {
   @GetMapping
   public ResponseEntity<List<UserDTO>> getAllUsers() {
     return ResponseEntity.ok(userService.getAllUsers());
+  }
+
+  @PatchMapping("/change-role/{userId}")
+  public ResponseEntity<Void> changeUserRole(
+      @PathVariable UUID userId, @RequestBody ChangeRoleRequestDTO changeRoleRequestDTO) {
+    userService.changeUserRole(changeRoleRequestDTO, userId);
+    return ResponseEntity.noContent().build();
   }
 }
