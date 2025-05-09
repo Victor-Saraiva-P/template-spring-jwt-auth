@@ -7,6 +7,7 @@ import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +19,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RefreshTokenService {
@@ -77,6 +79,9 @@ public class RefreshTokenService {
 
   @Transactional
   public void deleteRefreshToken(String refreshToken, Long tokenId, UUID userId) {
+
+    log.debug("Tentando invalidar o refresh token {}", refreshToken);
+
     RefreshTokenEntity rt =
         refreshTokenRepository
             .findByIdAndUserId(tokenId, userId)

@@ -11,11 +11,13 @@ import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class AuthService {
 
@@ -26,12 +28,15 @@ public class AuthService {
 
   @Transactional
   public UserDTO signup(@Valid SignupRequestDTO signupRequestDTO) {
+    log.info("Tentando registrar o usuário com o e-mail {}", signupRequestDTO.getEmail());
     // Verifica se o e-mail já está cadastrado
     if (userRepository.findByEmail(signupRequestDTO.getEmail()).isPresent()) {
+      log.error("E-mail já cadastrado {}", signupRequestDTO.getEmail());
       throw new EmailAlreadyExistsException(signupRequestDTO.getEmail());
     }
 
     try {
+
       // Converte o dto para entidade
       UserEntity user = createUserDTOMapper.mapFrom(signupRequestDTO);
 
@@ -47,6 +52,9 @@ public class AuthService {
 
   @Transactional(readOnly = true)
   public UserEntity login(LoginRequestDTO loginRequestDTO) {
+
+    log.info("Tentando fazer login com o e-mail {}", loginRequestDTO.getEmail());
+
     UserEntity userFoundByEmail =
         userRepository
             .findByEmail(loginRequestDTO.getEmail())
@@ -57,6 +65,7 @@ public class AuthService {
       return userFoundByEmail;
     }
     // Senão encontrar a senha é inválida
+    log.error("Senha inválida para o e-mail {}", loginRequestDTO.getEmail());
     throw new InvalidCredentialsException();
   }
 }
