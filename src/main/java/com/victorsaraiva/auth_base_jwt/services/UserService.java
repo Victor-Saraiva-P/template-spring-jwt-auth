@@ -27,6 +27,7 @@ public class UserService {
     return userEntities.stream().map(userMapper::mapTo).toList();
   }
 
+  @Transactional
   public void changeUserRole(ChangeRoleRequestDTO changeRoleRequestDTO, UUID userId) {
     UserEntity user =
         userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));

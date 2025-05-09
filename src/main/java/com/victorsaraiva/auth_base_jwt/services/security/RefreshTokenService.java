@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
@@ -25,6 +27,7 @@ public class RefreshTokenService {
   private final PasswordEncoder passwordEncoder;
   private final RefreshTokenRepository refreshTokenRepository;
 
+  @Transactional
   public RefreshTokenDTO createRefreshToken(UserEntity user) {
     String rawToken = UUID.randomUUID().toString();
     String hashedToken = passwordEncoder.encode(rawToken);
@@ -42,6 +45,7 @@ public class RefreshTokenService {
     return new RefreshTokenDTO(refreshToken.getId(), rawToken);
   }
 
+  @Transactional(noRollbackFor = InvalidRefreshTokenException.class)
   public RefreshTokenEntity validateRefreshToken(Long tokenId, String rawToken) {
 
     RefreshTokenEntity entity = findById(tokenId);
@@ -70,6 +74,7 @@ public class RefreshTokenService {
     refreshTokenRepository.delete(refreshToken);
   }
 
+  @Transactional
   public void deleteRefreshToken(String refreshToken, Long tokenId, UserEntity loggedUser) {
     RefreshTokenEntity rt = validateRefreshToken(tokenId, refreshToken);
 

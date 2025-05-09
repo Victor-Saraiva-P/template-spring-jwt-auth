@@ -13,6 +13,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class AuthService {
   private final Mapper<UserEntity, SignupRequestDTO> createUserDTOMapper;
   private final Mapper<UserEntity, UserDTO> userMapper;
 
+  @Transactional
   public UserDTO signup(@Valid SignupRequestDTO signupRequestDTO) {
     // Verifica se o e-mail já está cadastrado
     if (userRepository.findByEmail(signupRequestDTO.getEmail()).isPresent()) {
@@ -43,6 +45,7 @@ public class AuthService {
     }
   }
 
+  @Transactional(readOnly = true)
   public UserEntity login(LoginRequestDTO loginRequestDTO) {
     UserEntity userFoundByEmail =
         userRepository
