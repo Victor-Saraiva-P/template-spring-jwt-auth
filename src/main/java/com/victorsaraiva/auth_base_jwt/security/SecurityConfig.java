@@ -53,7 +53,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         apiBasePath + "/auth/ping",
                         apiBasePath + "/users",
-                        apiBasePath + "/users/change-role")
+                        apiBasePath + "/users/change-role/{userId}")
                     .hasRole("ADMIN")
 
                     // rotas padrão
