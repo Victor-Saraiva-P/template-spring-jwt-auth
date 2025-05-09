@@ -6,15 +6,16 @@ import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshT
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
@@ -75,14 +76,19 @@ public class RefreshTokenService {
   }
 
   @Transactional
-  public void deleteRefreshToken(String refreshToken, Long tokenId, UserEntity loggedUser) {
-    RefreshTokenEntity rt = validateRefreshToken(tokenId, refreshToken);
+  public void deleteRefreshToken(String refreshToken, Long tokenId, UUID userId) {
+    RefreshTokenEntity rt =
+        refreshTokenRepository
+            .findByIdAndUserId(tokenId, userId)
+            .orElseThrow(() -> new InvalidRefreshTokenException(refreshToken));
 
-    if (!rt.getUser().equals(loggedUser)) {
+    // checar se já está expirado/revogado
+    if (isRefreshTokenExpired(rt)) {
+      refreshTokenRepository.delete(rt);
       throw new InvalidRefreshTokenException(refreshToken);
     }
 
-    deleteByRefreshTokenEntity(rt);
+    refreshTokenRepository.delete(rt);
   }
 
   public CookieRefreshTokenDTO toCookie(RefreshTokenDTO refreshToken) {
