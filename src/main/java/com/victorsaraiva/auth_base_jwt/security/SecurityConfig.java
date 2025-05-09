@@ -46,14 +46,12 @@ public class SecurityConfig {
                     .permitAll()
 
                     // rotas que precisam de autenticação
-                    .requestMatchers(apiBasePath + "/auth/logout")
+                    .requestMatchers(apiBasePath + "/auth/logout", apiBasePath + "/auth/ping")
                     .authenticated()
 
                     // rotas que precisam ser admin
                     .requestMatchers(
-                        apiBasePath + "/auth/ping",
-                        apiBasePath + "/users",
-                        apiBasePath + "/users/change-role/{userId}")
+                        apiBasePath + "/users", apiBasePath + "/users/change-role/{userId}")
                     .hasRole("ADMIN")
 
                     // rotas padrão
