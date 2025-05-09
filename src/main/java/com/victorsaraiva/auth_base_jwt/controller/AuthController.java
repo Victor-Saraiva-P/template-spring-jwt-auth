@@ -1,18 +1,18 @@
 package com.victorsaraiva.auth_base_jwt.controller;
 
-import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginUserRequestDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.auth.SignupUserRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.LoginRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.auth.SignupRequestDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.AccessTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.CookieRefreshTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
-import com.victorsaraiva.auth_base_jwt.dtos.user.UserResponseDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.security.CustomUserDetails;
-import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.AuthService;
-import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
-import com.victorsaraiva.auth_base_jwt.services.RefreshTokenService;
+import com.victorsaraiva.auth_base_jwt.services.security.AccessTokenService;
+import com.victorsaraiva.auth_base_jwt.services.security.BlacklistService;
+import com.victorsaraiva.auth_base_jwt.services.security.RefreshTokenService;
 import jakarta.validation.Valid;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
@@ -33,25 +33,23 @@ public class AuthController {
   private final BlacklistService blacklistService;
 
   @PostMapping("/signup")
-  public ResponseEntity<UserResponseDTO> signup(
-      @Valid @RequestBody SignupUserRequestDTO signupUserRequestDTO) {
-    UserResponseDTO registeredUser = this.authService.signup(signupUserRequestDTO);
+  public ResponseEntity<UserDTO> signup(@Valid @RequestBody SignupRequestDTO signupRequestDTO) {
+    UserDTO registeredUser = this.authService.signup(signupRequestDTO);
 
     return ResponseEntity.status(HttpStatus.CREATED).body(registeredUser);
   }
 
   @PostMapping("/login")
-  public ResponseEntity<AccessTokenDTO> login(
-      @Valid @RequestBody LoginUserRequestDTO loginUserRequestDTO) {
+  public ResponseEntity<AccessTokenDTO> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
 
     // Extrai o usuario do request
-    UserEntity userEntity = authService.login(loginUserRequestDTO);
+    UserEntity userEntity = authService.login(loginRequestDTO);
 
     // Gera novos tokens e configura a resposta com cookies
     return generateTokensResponse(userEntity);
   }
 
-  @PostMapping("/refreshToken")
+  @PostMapping("/refresh-token")
   public ResponseEntity<AccessTokenDTO> refreshToken(
       @CookieValue("refreshToken") String oldRefreshToken,
       @CookieValue("refreshTokenId") Long oldRefreshTokenId) {

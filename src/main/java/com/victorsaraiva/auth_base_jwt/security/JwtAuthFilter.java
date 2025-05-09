@@ -1,8 +1,8 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.services.AccessTokenService;
-import com.victorsaraiva.auth_base_jwt.services.BlacklistService;
-import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
+import com.victorsaraiva.auth_base_jwt.services.security.AccessTokenService;
+import com.victorsaraiva.auth_base_jwt.services.security.BlacklistService;
+import com.victorsaraiva.auth_base_jwt.services.security.UserDetailsServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

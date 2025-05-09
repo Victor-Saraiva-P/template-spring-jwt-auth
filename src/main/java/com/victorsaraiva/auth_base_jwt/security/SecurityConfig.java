@@ -1,6 +1,6 @@
 package com.victorsaraiva.auth_base_jwt.security;
 
-import com.victorsaraiva.auth_base_jwt.services.UserDetailsServiceImpl;
+import com.victorsaraiva.auth_base_jwt.services.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ public class SecurityConfig {
                     .requestMatchers(
                         apiBasePath + "/auth/login",
                         apiBasePath + "/auth/signup",
-                        apiBasePath + "/auth/refreshToken")
+                        apiBasePath + "/auth/refresh-token")
                     .permitAll()
 
                     // rotas que precisam de autenticação
@@ -50,7 +50,10 @@ public class SecurityConfig {
                     .authenticated()
 
                     // rotas que precisam ser admin
-                    .requestMatchers(apiBasePath + "/auth/ping")
+                    .requestMatchers(
+                        apiBasePath + "/auth/ping",
+                        apiBasePath + "/users",
+                        apiBasePath + "/users/change-role/{userId}")
                     .hasRole("ADMIN")
 
                     // rotas padrão

@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.services;
+package com.victorsaraiva.auth_base_jwt.services.security;
 
 import java.time.Duration;
 import java.time.Instant;

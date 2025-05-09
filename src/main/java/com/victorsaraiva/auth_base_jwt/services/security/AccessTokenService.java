@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.services;
+package com.victorsaraiva.auth_base_jwt.services.security;
 
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import io.jsonwebtoken.Claims;
@@ -80,6 +80,10 @@ public class AccessTokenService {
 
   public String extractId(String token) {
     return extractClaim(token, Claims::getId);
+  }
+
+  public String extractSubject(String token) {
+    return extractClaim(token, Claims::getSubject);
   }
 
   private boolean isTokenExpired(String token) {
