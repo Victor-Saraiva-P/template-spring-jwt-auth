@@ -34,7 +34,7 @@ public class RefreshTokenService {
   private final RefreshTokenRepository refreshTokenRepository;
   private final AccessTokenService accessTokenService;
 
-  @Transactional(readOnly = false)
+  @Transactional()
   public RefreshTokenDTO createRefreshToken(UserEntity user) {
     String rawToken = UUID.randomUUID().toString();
     String hashedToken = passwordEncoder.encode(rawToken);
@@ -117,7 +117,7 @@ public class RefreshTokenService {
         .build());
   }
 
-  @Transactional(readOnly = false)
+  @Transactional()
   public ResponseEntity<AccessTokenDTO> refreshToken(String oldRefreshToken, Long oldRefreshTokenId) {
 
     // Valida o refreshToken
@@ -134,7 +134,7 @@ public class RefreshTokenService {
 
   }
 
-  @Transactional(readOnly = false)
+  @Transactional()
   public ResponseEntity<AccessTokenDTO> generateJwtTokensResponse(UserEntity userEntity) {
 
     // Gera o accessToken
