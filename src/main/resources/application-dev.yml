@@ -13,3 +13,9 @@ security:
     refresh-token:
         expiration: 2592000000 # 30 dias em milissegundos
 
+#Configuração dos logs
+logging:
+  level:
+    org.springframework.security: DEBUG
+    com.victorsaraiva: DEBUG        # (opcional) seus pacotes
+

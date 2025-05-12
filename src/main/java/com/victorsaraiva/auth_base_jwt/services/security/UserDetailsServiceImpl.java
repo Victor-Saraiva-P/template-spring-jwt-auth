@@ -1,4 +1,4 @@
-package com.victorsaraiva.auth_base_jwt.services;
+package com.victorsaraiva.auth_base_jwt.services.security;
 
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
