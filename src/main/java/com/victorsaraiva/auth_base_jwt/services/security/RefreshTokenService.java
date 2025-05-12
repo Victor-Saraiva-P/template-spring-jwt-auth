@@ -1,5 +1,6 @@
 package com.victorsaraiva.auth_base_jwt.services.security;
 
+import com.victorsaraiva.auth_base_jwt.dtos.jwt.AccessTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.CookieRefreshTokenDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.jwt.RefreshTokenDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshTokenException;
@@ -9,7 +10,9 @@ import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,18 +32,19 @@ public class RefreshTokenService {
 
   private final PasswordEncoder passwordEncoder;
   private final RefreshTokenRepository refreshTokenRepository;
+  private final AccessTokenService accessTokenService;
 
-  @Transactional
+  @Transactional(readOnly = false)
   public RefreshTokenDTO createRefreshToken(UserEntity user) {
     String rawToken = UUID.randomUUID().toString();
     String hashedToken = passwordEncoder.encode(rawToken);
 
     RefreshTokenEntity refreshToken =
-        RefreshTokenEntity.builder()
-            .token(hashedToken)
-            .user(user)
-            .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
-            .build();
+      RefreshTokenEntity.builder()
+        .token(hashedToken)
+        .user(user)
+        .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
+        .build();
 
     refreshToken = refreshTokenRepository.save(refreshToken);
 
@@ -83,9 +87,9 @@ public class RefreshTokenService {
     log.debug("Tentando invalidar o refresh token {}", refreshToken);
 
     RefreshTokenEntity rt =
-        refreshTokenRepository
-            .findByIdAndUserId(tokenId, userId)
-            .orElseThrow(() -> new InvalidRefreshTokenException(refreshToken));
+      refreshTokenRepository
+        .findByIdAndUserId(tokenId, userId)
+        .orElseThrow(() -> new InvalidRefreshTokenException(refreshToken));
 
     // checar se já está expirado/revogado
     if (isRefreshTokenExpired(rt)) {
@@ -97,18 +101,55 @@ public class RefreshTokenService {
   }
 
   public CookieRefreshTokenDTO toCookie(RefreshTokenDTO refreshToken) {
+
     return new CookieRefreshTokenDTO(
-        ResponseCookie.from("refreshToken", refreshToken.token())
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(Duration.ofMillis(refreshTokenExpiration))
-            .build(),
-        ResponseCookie.from("refreshTokenId", String.valueOf(refreshToken.id()))
-            .httpOnly(true)
-            .secure(true)
-            .path("/")
-            .maxAge(Duration.ofMillis(refreshTokenExpiration))
-            .build());
+      ResponseCookie.from("refreshToken", refreshToken.token())
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(Duration.ofMillis(refreshTokenExpiration))
+        .build(),
+      ResponseCookie.from("refreshTokenId", String.valueOf(refreshToken.id()))
+        .httpOnly(true)
+        .secure(true)
+        .path("/")
+        .maxAge(Duration.ofMillis(refreshTokenExpiration))
+        .build());
+  }
+
+  @Transactional(readOnly = false)
+  public ResponseEntity<AccessTokenDTO> refreshToken(String oldRefreshToken, Long oldRefreshTokenId) {
+
+    // Valida o refreshToken
+    RefreshTokenEntity oldRt = validateRefreshToken(oldRefreshTokenId, oldRefreshToken);
+
+    // Estabelece o usuário
+    UserEntity user = oldRt.getUser();
+
+    // Deleta o refreshToken usado
+    deleteByRefreshTokenEntity(oldRt);
+
+    // Gera novos tokens e configura a resposta com cookies
+    return generateJwtTokensResponse(user);
+
+  }
+
+  @Transactional(readOnly = false)
+  public ResponseEntity<AccessTokenDTO> generateJwtTokensResponse(UserEntity userEntity) {
+
+    // Gera o accessToken
+    String newAccessToken = accessTokenService.generateToken(userEntity);
+
+    // Gera o refreshToken
+    RefreshTokenDTO newRefreshToken = createRefreshToken(userEntity);
+
+    // Gera o cookie do refreshToken
+    CookieRefreshTokenDTO cookieRefreshTokenDTO = toCookie(newRefreshToken);
+
+    // Retorna o novo accessToken e os cookies do refreshToken
+    return ResponseEntity.ok()
+      .header(HttpHeaders.SET_COOKIE, cookieRefreshTokenDTO.tokenCookie().toString())
+      .header(HttpHeaders.SET_COOKIE, cookieRefreshTokenDTO.idCookie().toString())
+      .body(new AccessTokenDTO(newAccessToken));
   }
 }
