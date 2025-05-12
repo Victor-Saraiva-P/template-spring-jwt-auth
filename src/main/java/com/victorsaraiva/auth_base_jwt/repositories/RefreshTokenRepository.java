@@ -9,5 +9,5 @@ public interface RefreshTokenRepository extends JpaRepository<RefreshTokenEntity
 
   void deleteAllByUserId(UUID userId);
 
-  Optional<RefreshTokenEntity> findByIdAndUserId(Long id, UUID user_id);
+  Optional<RefreshTokenEntity> findByIdAndUserId(Long id, UUID userId);
 }
