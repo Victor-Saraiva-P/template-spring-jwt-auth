@@ -1,6 +1,7 @@
 package com.victorsaraiva.auth_base_jwt.services;
 
 import com.victorsaraiva.auth_base_jwt.dtos.user.ChangeRoleRequestDTO;
+import com.victorsaraiva.auth_base_jwt.dtos.user.UpdateUserDTO;
 import com.victorsaraiva.auth_base_jwt.dtos.user.UserDTO;
 import com.victorsaraiva.auth_base_jwt.exceptions.user.UserNotFoundException;
 import com.victorsaraiva.auth_base_jwt.mappers.Mapper;
@@ -25,6 +26,7 @@ public class UserService {
   private final Mapper<UserEntity, UserDTO> userMapper;
 
   public List<UserDTO> getAllUsers() {
+
     List<UserEntity> userEntities = userRepository.findAll();
 
     return userEntities.stream().map(userMapper::mapTo).toList();
@@ -35,7 +37,7 @@ public class UserService {
 
     log.info("Tentando mudar o papel do usuário com o id {}", userId);
     UserEntity user =
-        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     user.setRole(changeRoleRequestDTO.getRoleEnum());
     userRepository.save(user);
@@ -47,12 +49,33 @@ public class UserService {
 
     log.info("Tentando deletar o usuário com o id {}", userId);
     UserEntity user =
-        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     // Remove todos os refresh tokens do usuario
     refreshTokenRepository.deleteAllByUserId(userId);
 
     // Remove o usuario
     userRepository.delete(user);
+  }
+
+  @Transactional
+  public UserDTO updateUser(UpdateUserDTO updateUser, UUID userId) {
+
+    log.info("Tentando atualizar o usuário com o id {}", userId);
+
+    UserEntity user =
+      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+    if (updateUser.getUsername() != null) {
+      user.setUsername(updateUser.getUsername());
+    }
+
+    if (updateUser.getEmail() != null) {
+      user.setEmail(updateUser.getEmail());
+    }
+
+    userRepository.save(user);
+
+    return userMapper.mapTo(user);
   }
 }
