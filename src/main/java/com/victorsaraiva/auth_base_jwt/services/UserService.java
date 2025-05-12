@@ -9,12 +9,11 @@ import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
 import com.victorsaraiva.auth_base_jwt.repositories.UserRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -37,7 +36,7 @@ public class UserService {
 
     log.info("Tentando mudar o papel do usuário com o id {}", userId);
     UserEntity user =
-      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     user.setRole(changeRoleRequestDTO.getRoleEnum());
     userRepository.save(user);
@@ -49,7 +48,7 @@ public class UserService {
 
     log.info("Tentando deletar o usuário com o id {}", userId);
     UserEntity user =
-      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     // Remove todos os refresh tokens do usuario
     refreshTokenRepository.deleteAllByUserId(userId);
@@ -64,7 +63,7 @@ public class UserService {
     log.info("Tentando atualizar o usuário com o id {}", userId);
 
     UserEntity user =
-      userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
 
     if (updateUser.getUsername() != null) {
       user.setUsername(updateUser.getUsername());

@@ -44,24 +44,25 @@ public class AuthController {
 
   @PostMapping("/refresh-token")
   public ResponseEntity<AccessTokenDTO> refreshToken(
-    @CookieValue("refreshToken") String oldRefreshToken,
-    @CookieValue("refreshTokenId") Long oldRefreshTokenId) {
+      @CookieValue("refreshToken") String oldRefreshToken,
+      @CookieValue("refreshTokenId") Long oldRefreshTokenId) {
 
     return refreshTokenService.refreshToken(oldRefreshToken, oldRefreshTokenId);
   }
 
   @PostMapping("/logout")
   public ResponseEntity<Void> logout(
-    @RequestHeader("Authorization") String authHeader,
-    @CookieValue("refreshToken") String refreshToken,
-    @CookieValue("refreshTokenId") Long refreshTokenId,
-    @AuthenticationPrincipal CustomUserDetails userDetails) {
+      @RequestHeader("Authorization") String authHeader,
+      @CookieValue("refreshToken") String refreshToken,
+      @CookieValue("refreshTokenId") Long refreshTokenId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     // Adiciona o access token à blacklist
     blacklistService.blacklistByAuthHeader(authHeader);
 
     // Deleta o refresh token
-    refreshTokenService.deleteRefreshToken(refreshToken, refreshTokenId, userDetails.user().getId());
+    refreshTokenService.deleteRefreshToken(
+        refreshToken, refreshTokenId, userDetails.user().getId());
     return ResponseEntity.noContent().build();
   }
 

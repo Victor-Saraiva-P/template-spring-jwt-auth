@@ -12,13 +12,12 @@ import com.victorsaraiva.auth_base_jwt.services.UserService;
 import com.victorsaraiva.auth_base_jwt.services.security.AccessTokenService;
 import com.victorsaraiva.auth_base_jwt.services.security.BlacklistService;
 import jakarta.validation.Valid;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("${api.base-url}/users")
@@ -36,7 +35,7 @@ public class UserController {
 
   @PatchMapping("/change-role/{userId}")
   public ResponseEntity<Void> changeUserRole(
-    @PathVariable UUID userId, @Valid @RequestBody ChangeRoleRequestDTO changeRoleRequest) {
+      @PathVariable UUID userId, @Valid @RequestBody ChangeRoleRequestDTO changeRoleRequest) {
 
     userService.changeUserRole(changeRoleRequest, userId);
     return ResponseEntity.noContent().build();
@@ -44,8 +43,8 @@ public class UserController {
 
   @DeleteMapping("/delete-your-account")
   public ResponseEntity<Void> deleteUser(
-    @RequestHeader("Authorization") String authHeader,
-    @AuthenticationPrincipal CustomUserDetails userDetails) {
+      @RequestHeader("Authorization") String authHeader,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     String accessToken = authHeader.replace("Bearer ", "");
     String userIdFromAccessToken = accessTokenService.extractSubject(accessToken);
@@ -61,9 +60,9 @@ public class UserController {
 
   @PatchMapping("/update-your-account")
   public ResponseEntity<UpdateAccountResponseDTO> updateUser(
-    @RequestHeader("Authorization") String authHeader,
-    @AuthenticationPrincipal CustomUserDetails userDetails,
-    @Valid @RequestBody UpdateUserDTO updateUserDTO) {
+      @RequestHeader("Authorization") String authHeader,
+      @AuthenticationPrincipal CustomUserDetails userDetails,
+      @Valid @RequestBody UpdateUserDTO updateUserDTO) {
 
     UserEntity loggedUser = userDetails.user();
 

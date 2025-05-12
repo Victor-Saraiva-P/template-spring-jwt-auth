@@ -7,6 +7,9 @@ import com.victorsaraiva.auth_base_jwt.exceptions.refresh_tokens.InvalidRefreshT
 import com.victorsaraiva.auth_base_jwt.models.RefreshTokenEntity;
 import com.victorsaraiva.auth_base_jwt.models.UserEntity;
 import com.victorsaraiva.auth_base_jwt.repositories.RefreshTokenRepository;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,10 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Duration;
-import java.time.Instant;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -40,11 +39,11 @@ public class RefreshTokenService {
     String hashedToken = passwordEncoder.encode(rawToken);
 
     RefreshTokenEntity refreshToken =
-      RefreshTokenEntity.builder()
-        .token(hashedToken)
-        .user(user)
-        .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
-        .build();
+        RefreshTokenEntity.builder()
+            .token(hashedToken)
+            .user(user)
+            .expiryDate(Instant.now().plusMillis(refreshTokenExpiration))
+            .build();
 
     refreshToken = refreshTokenRepository.save(refreshToken);
 
@@ -87,9 +86,9 @@ public class RefreshTokenService {
     log.debug("Tentando invalidar o refresh token {}", refreshToken);
 
     RefreshTokenEntity rt =
-      refreshTokenRepository
-        .findByIdAndUserId(tokenId, userId)
-        .orElseThrow(() -> new InvalidRefreshTokenException(refreshToken));
+        refreshTokenRepository
+            .findByIdAndUserId(tokenId, userId)
+            .orElseThrow(() -> new InvalidRefreshTokenException(refreshToken));
 
     // checar se já está expirado/revogado
     if (isRefreshTokenExpired(rt)) {
@@ -103,22 +102,23 @@ public class RefreshTokenService {
   public CookieRefreshTokenDTO toCookie(RefreshTokenDTO refreshToken) {
 
     return new CookieRefreshTokenDTO(
-      ResponseCookie.from("refreshToken", refreshToken.token())
-        .httpOnly(true)
-        .secure(true)
-        .path("/")
-        .maxAge(Duration.ofMillis(refreshTokenExpiration))
-        .build(),
-      ResponseCookie.from("refreshTokenId", String.valueOf(refreshToken.id()))
-        .httpOnly(true)
-        .secure(true)
-        .path("/")
-        .maxAge(Duration.ofMillis(refreshTokenExpiration))
-        .build());
+        ResponseCookie.from("refreshToken", refreshToken.token())
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofMillis(refreshTokenExpiration))
+            .build(),
+        ResponseCookie.from("refreshTokenId", String.valueOf(refreshToken.id()))
+            .httpOnly(true)
+            .secure(true)
+            .path("/")
+            .maxAge(Duration.ofMillis(refreshTokenExpiration))
+            .build());
   }
 
   @Transactional()
-  public ResponseEntity<AccessTokenDTO> refreshToken(String oldRefreshToken, Long oldRefreshTokenId) {
+  public ResponseEntity<AccessTokenDTO> refreshToken(
+      String oldRefreshToken, Long oldRefreshTokenId) {
 
     // Valida o refreshToken
     RefreshTokenEntity oldRt = validateRefreshToken(oldRefreshTokenId, oldRefreshToken);
@@ -131,7 +131,6 @@ public class RefreshTokenService {
 
     // Gera novos tokens e configura a resposta com cookies
     return generateJwtTokensResponse(user);
-
   }
 
   @Transactional()
@@ -148,8 +147,8 @@ public class RefreshTokenService {
 
     // Retorna o novo accessToken e os cookies do refreshToken
     return ResponseEntity.ok()
-      .header(HttpHeaders.SET_COOKIE, cookieRefreshTokenDTO.tokenCookie().toString())
-      .header(HttpHeaders.SET_COOKIE, cookieRefreshTokenDTO.idCookie().toString())
-      .body(new AccessTokenDTO(newAccessToken));
+        .header(HttpHeaders.SET_COOKIE, cookieRefreshTokenDTO.tokenCookie().toString())
+        .header(HttpHeaders.SET_COOKIE, cookieRefreshTokenDTO.idCookie().toString())
+        .body(new AccessTokenDTO(newAccessToken));
   }
 }
